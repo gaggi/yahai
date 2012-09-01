@@ -1,0 +1,248 @@
+<html> 
+  <head> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link href="css/jquery.mobile.css" rel="stylesheet" type="text/css" /> 
+	<link href="css/split-view.css" rel="stylesheet" type="text/css" /> 
+	<script src="js/jquery.js"></script> 
+	<script src="js/jquery.cookie.js"></script> 
+	<script src="js/jquery.mobile.js"></script> 
+	<script> 
+
+	var state;
+	var value;
+
+	function adddimmer(id,name,room,state,value) {
+		if(state == 'on') {
+			var selecton = 'selected';
+			var selectoff = '';
+		} else {
+			var selecton = '';
+			var selectoff = 'selected';
+			value = '0';
+		}
+		$("#primary"+room).append('<div data-role="popup" id="popup'+id+'" data-theme="c" style="min-width: 295px;"><div data-role="header" data-theme="b" class="ui-corner-top"><h1>Dimmen</h1></div><input type="range" name="'+id+'" id="'+id+'val" value="'+value+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" /></div><div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select><a href="#popup'+id+'" data-rel="popup" data-role="button" data-inline="true" style="margin-top: -10px">Dimmen</a></div>');
+	}
+	
+	function addlight(id,name,room,state) {
+		if(state == 'on') {
+			var selecton = 'selected';
+			var selectoff = '';
+		} else {
+			var selecton = '';
+			var selectoff = 'selected';
+		}
+		$("#primary"+room).append('<div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select></div>');
+	}
+	
+	function ajaxCall(data,type,async) {
+        return $.ajax({
+            type: 'GET',
+			url: $.cookie('serveraddress')+':'+$.cookie('serverport')+'/fhem',
+			data: data,
+			dataType: type,
+            async: async
+		});
+	}
+	
+	function init() {
+		var rooms = new Array();
+		var actors = new Array();
+		
+		$('#serveraddress').val($.cookie('serveraddress'));
+		$('#serverport').val($.cookie('serverport'));
+		$('#serverusername').val($.cookie('serverusername'));
+		$('#serverpassword').val($.cookie('serverpassword'));
+		
+		ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
+			$.each(data.Results, function(one, two) {
+				$.each(two, function(three, four) {
+					$.each(four, function(five, six) {
+						if(six.ATTR && six.ATTR.webType) {
+							if(jQuery.inArray(six.ATTR.room,rooms) == -1) { rooms.push(six.ATTR.room); }
+								$.each(six.READINGS, function(seven, eight) {
+									if(eight.state) { state = eight.state; }
+									if(eight.dimmValue) { value = eight.dimmValue; }
+								});
+								actors.push({"type": six.ATTR.webType, "name": six.NAME, "room": six.ATTR.room, "state": state, "value": value});
+						}
+					});
+				});
+			});
+		});
+		$.each(rooms, function(id, room) {
+			$('body').append('<div data-role="page" class="type-interior" id="page'+room+'"><div data-role="header" data-theme="b"><h1>'+room+'</h1><a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a><a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="fade">Einstellungen</a></div><div data-role="content"><div class="content-primary" id="primary'+room+'"></div><div class="content-secondary"><div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" ><h3>Raum w&auml;hlen</h3><ul data-role="listview" data-theme="c" data-dividertheme="d" class="rooms"></ul></div></div></div></div>');	
+		});
+		$.each(rooms, function(id, room) {
+			$(".rooms").append('<li><a href="#page'+room+'" data-transition="fade">'+room+'</a></li>');
+		});
+		$.each(actors, function(key, value) {
+			if(value.type == 'dimmer') {
+				adddimmer(value.name,'Licht',value.room,value.state,value.value);
+			}else if(value.type == 'light') {
+				addlight(value.name,'Licht',value.room,value.state);
+			}
+		});
+	}
+
+	function longPoll() {
+		var rooms = new Array();
+		var actors = new Array();
+		ajaxCall({ room: 'all', inform: 1, XHR: 1, CORS: 1 },'',true,true).success(function(data) {
+			//Fängt die von den Schaltern generierten events ab
+			var response = data.split("\n");
+			$.each(response, function(key, value) {
+				if(value != '' && value.search(/schalter/i) == -1) {
+					ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
+						$.each(data.Results, function(one, two) {
+							$.each(two, function(three, four) {
+								$.each(four, function(five, six) {
+									if(six.ATTR && six.ATTR.webType) {
+										if(jQuery.inArray(six.ATTR.room,rooms) == -1) { rooms.push(six.ATTR.room); }
+											$.each(six.READINGS, function(seven, eight) {
+												if(eight.state) { state = eight.state; }
+												if(eight.dimmValue) { value = eight.dimmValue; }
+											});
+											actors.push({"type": six.ATTR.webType, "name": six.NAME, "room": six.ATTR.room, "state": state, "value": value});
+									}
+								});
+							});
+						});
+						$.each(actors, function(key, value) {
+							// Funktion wenn DIMMER
+							if(value.type == 'dimmer') {
+								if($('#'+value.name+'flip').val() != value.state) {
+									$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
+								} else {
+									if($('#'+value.name+'val').val() != value.value && value.state == 'on') {
+									$('#'+value.name+'val').val(value.value).slider().slider("refresh");
+									}
+								}
+								if(value.state != 'on') {
+									$('#'+value.name+'val').val(0).slider().slider("refresh");
+								}
+							// Funktion wenn LIGHT
+							} else if(value.type == 'light') {
+								$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
+							}
+						});	
+					});	
+				}
+			});
+			longPoll();
+		});
+	}	
+	
+	$(".dimmerval").live("slidestop" , function() {
+		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1, CORS: 1 },'',true,true);
+	});
+
+	$(".dimmerflip").live("change" , function() {
+		if($(this).val() == 'on') {
+			ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 100 10', XHR: 1, CORS: 1 },'',true,true);
+		} else {
+			ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 0 10', XHR: 1, CORS: 1 },'',true,true);
+		}
+	});
+	
+	$(".lightflip").live("change" , function() {
+		ajaxCall({ cmd: 'trigger nForTimer schalter_'+this.name+' on 0.1 released', XHR: 1, CORS: 1 },'',true,true);
+	});
+	
+	$("#serverTest").live("click", function() {
+		$.ajax({
+            type: 'GET',
+			url: $('#serveraddress').val()+':'+$('#serverport').val()+'/fhem',
+			data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
+			dataType: 'json',
+            async: false,
+			timeout: 1000,
+	
+            success: function(data){
+			$('#serverTestLog').html('<h3><span style="color: green">Erfolg</span></h3>');
+			},
+			
+			error: function(XMLHttpRequest, textStatus, errorThrown){
+			$('#serverTestLog').html('<h3><span style="color: red">Fehler</h3></span><p>'+errorThrown+'</p>');
+            }
+		
+		});
+	});	
+	
+	$("#saveConfig").live("click", function() {
+		$.cookie('serveraddress', $('#serveraddress').val(), { expires: 9999 });
+		$.cookie('serverport', $('#serverport').val(), { expires: 9999 });
+		$.cookie('serverusername', $('#serverusername').val(), { expires: 9999 });
+		$.cookie('serverpassword', $('#serverpassword').val(), { expires: 9999 });
+	});
+	
+	$.mobile.autoInitializePage = false
+	</script> 
+	</head> 
+	<body>
+	
+		<div data-role="page" class="type-interior" id="pageHome">
+			<div data-role="header" data-theme="b">
+				<h1>Startseite</h1>
+				<a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a>
+				<a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="slidedown">Einstellungen</a>
+			</div>
+			<div data-role="content">
+				<div class="content-primary" id="primaryHome">
+					<p>Das hier ist die Startseite muha alles geht hier hin.</p>
+					<p>Achso natürlich werden auch alle den Asura dienen.</p>
+				</div>
+				<div class="content-secondary">
+					<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d">
+						<h3>Raum w&auml;hlen</h3>
+						<ul data-role="listview" data-theme="c" data-dividertheme="d" class="rooms"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div data-role="page" class="type-interior" id="pageConfig">
+			<div data-role="header" data-theme="b">
+				<h1>Einstellungen</h1>
+			</div>
+			<div data-role="content">
+				<div class="content" id="primaryConfig">
+				<form action="#" method="post" data-ajax="false">
+					<div data-role="collapsible" data-content-theme="c">
+					<h3>Sicherheit</h3>
+					</div>
+					<div data-role="collapsible" data-content-theme="c">
+					<h3>Server</h3>
+						<div data-role="fieldcontain">
+							<label for="serveraddress">Server:</label>
+							<input type="text" name="serveraddress" id="serveraddress" value=""  />
+						</div>	
+						<div data-role="fieldcontain">
+							<label for="serverport">Port:</label>
+							<input type="text" name="serverport" id="serverport" value=""  />
+						</div>	
+						<div data-role="fieldcontain">
+							<label for="serverusername">Benutzer:</label>
+							<input type="text" name="serverusername" id="serverusername" value=""  />
+						</div>	
+						<div data-role="fieldcontain">
+							<label for="serverpassword">Passwort:</label>
+							<input type="text" name="serverpassword" id="serverpassword" value=""  />
+						</div>	
+						<a href="#" data-role="button" data-theme="c" id="serverTest">Testen</a>
+						<div data-role="collapsible" data-content-theme="" id="serverTestLog" data-collapsed="false"></div>
+					</div>				
+					<a data-role="button" data-icon="delete" data-rel="back" data-inline="true" id="cancelConfig">Abbrechen</a>
+					<button type="submit" data-icon="delete" name="submit" value="submit" data-inline="true" data-theme="b" id="saveConfig">Submit</button>
+				</form>
+				</div>
+			</div>
+		</div>
+	
+	</body> 
+	<script> 
+	init();
+    $.mobile.initializePage();
+	longPoll();
+	
+	</script> 
+</html> 
