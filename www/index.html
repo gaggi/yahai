@@ -94,9 +94,10 @@ Platz fuer Kommentare
 		var rooms = new Array();
 		var actors = new Array();
 		ajaxCall({ room: 'all', inform: 1, XHR: 1, CORS: 1 },'',true,true).success(function(data) {
-			//Faengt die von den Schaltern generierten events ab
+			// catches any changes of FHEM devices
 			var response = data.split("\n");
 			$.each(response, function(key, value) {
+				// dont do anything if only buttons are pressed
 				if(value != '' && value.search(/schalter/i) == -1) {
 					ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
 						$.each(data.Results, function(one, two) {
@@ -114,7 +115,7 @@ Platz fuer Kommentare
 							});
 						});
 						$.each(actors, function(key, value) {
-							// Funktion wenn DIMMER
+							// do this if actor has webType dimmer
 							if(value.type == 'dimmer') {
 								if($('#'+value.name+'flip').val() != value.state) {
 									$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
@@ -126,7 +127,7 @@ Platz fuer Kommentare
 								if(value.state != 'on') {
 									$('#'+value.name+'val').val(0).slider().slider("refresh");
 								}
-							// Funktion wenn LIGHT
+							// do this if actor has webType light
 							} else if(value.type == 'light') {
 								$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
 							}
@@ -161,8 +162,12 @@ Platz fuer Kommentare
 			data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
 			dataType: 'json',
             async: false,
-			timeout: 1000,
-	
+
+			// Have to set specific ip-address on server cors allow header before this is working
+//			xhrFields: { withCredentials: true },
+//			username: "gerrit",
+//			password: "jessi14051989",
+
             success: function(data){
 			$('#serverTestLog').html('<h3><span style="color: green">Erfolg</span></h3>');
 			},
@@ -195,7 +200,7 @@ Platz fuer Kommentare
 			<div data-role="content">
 				<div class="content-primary" id="primaryHome">
 					<p>Das hier ist die Startseite muha alles geht hier hin.</p>
-					<p>Achso natürlich werden auch alle den Asura dienen.</p>
+					<p>Achso nat&uuml;rlich werden auch alle den Asura dienen.</p>
 				</div>
 				<div class="content-secondary">
 					<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d">
