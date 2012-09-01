@@ -1,9 +1,14 @@
-<html> 
+<!DOCTYPE html>
+<!--
+Platz fuer Kommentare
+-->
+<html>
   <head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>yaHAi</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link href="css/jquery.mobile.css" rel="stylesheet" type="text/css" /> 
 	<link href="css/split-view.css" rel="stylesheet" type="text/css" /> 
-	<title>yaHAi</title>
 	<script src="js/jquery.js"></script> 
 	<script src="js/jquery.cookie.js"></script> 
 	<script src="js/jquery.mobile.js"></script> 
@@ -89,7 +94,7 @@
 		var rooms = new Array();
 		var actors = new Array();
 		ajaxCall({ room: 'all', inform: 1, XHR: 1, CORS: 1 },'',true,true).success(function(data) {
-			//Fängt die von den Schaltern generierten events ab
+			//Faengt die von den Schaltern generierten events ab
 			var response = data.split("\n");
 			$.each(response, function(key, value) {
 				if(value != '' && value.search(/schalter/i) == -1) {
