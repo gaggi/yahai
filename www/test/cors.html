@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+Platz fuer Kommentare
+-->
+<html>
+  <head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>yaHAi</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link href="css/jquery.mobile.css" rel="stylesheet" type="text/css" /> 
+	<link href="css/split-view.css" rel="stylesheet" type="text/css" /> 
+	<script src="js/jquery.js"></script> 
+	<script src="js/jquery.cookie.js"></script> 
+	<script src="js/jquery.mobile.js"></script> 
+	<script> 
+	$("#serverTest").live("click", function() {
+		$.ajax({
+			type: "GET",
+			url: 'http://www.sturm-busse.de/test/cors.php',
+			crossDomain: true,
+			xhrFields: {
+			   withCredentials: true
+			},
+
+			headers: { 'Authorization': 'Basic Z2Vycml0Omplc3NpMTQwNTE5ODk=' },
+			
+// 			working in chrome
+//			usename: 'gerrit',
+//			password: 'jessi14051989',
+
+			error: function(data,error,errormsg){
+				$('#serverTestLog').html('<h3><span style="color: red">'+error+'</h3></span><p>'+errormsg+'</p>');
+			},
+			success: function(data){
+				$('#serverTestLog').html('<h3><span style="color: green">success</h3>');
+			}
+		});
+	});
+	</script> 
+	</head> 
+	<body>
+		<a href="#" data-role="button" data-theme="c" id="serverTest">test</a>
+		<div data-role="collapsible" data-content-theme="" id="serverTestLog" data-collapsed="false"></div>
+	</body> 
+</html>
