@@ -16,21 +16,18 @@ Platz fuer Kommentare
 	jQuery.support.cors = true;
 	$("#serverTest").live("click", function() {
 		$.ajax({
-			type: "OPTIONS",
-//			url: 'http://www.sturm-busse.de/test/cors.php',
+			type: "GET",
 			url: 'http://n0n4m3.homeunix.org:8083/fhem?cmd=jsonlist&XHR=1&CORS=1',
-			dataType: 'json',
 			crossDomain: true,
 			xhrFields: {
 			   withCredentials: true
 			},
-
-			// working in chrome
-			headers: { Authorization: 'Basic Z2Vycml0Omplc3NpMTQwNTE5ODk=' },
-			
-// 			working in chrome
-//			usename: 'gerrit',
-//			password: 'jessi14051989',
+		
+			// working in chrome, ie, mobile safari and mobile chrome
+			headers: { 
+				'Authorization': 'Basic Z2Vycml0Omplc3NpMTQwNTE5ODk6eA==',
+//				'Content-Type': 'application/x-www-form-urlencoded'
+			},
 
 			error: function(data,error,errormsg){
 				$('#serverTestLog').html('<h3><span style="color: red">'+error+'</h3></span><p>'+errormsg+'</p>');
