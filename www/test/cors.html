@@ -15,14 +15,17 @@ Platz fuer Kommentare
 	<script> 
 	$("#serverTest").live("click", function() {
 		$.ajax({
-			type: "GET",
-			url: 'http://www.sturm-busse.de/test/cors.php',
+			type: "OPTIONS",
+//			url: 'http://www.sturm-busse.de/test/cors.php',
+			url: 'http://n0n4m3.homeunix.org:8083/fhem?cmd=jsonlist&XHR=1&CORS=1',
+			dataType: 'json',
 			crossDomain: true,
 			xhrFields: {
 			   withCredentials: true
 			},
 
-			headers: { 'Authorization': 'Basic Z2Vycml0Omplc3NpMTQwNTE5ODk=' },
+			// working in chrome
+			headers: { Authorization: 'Basic Z2Vycml0Omplc3NpMTQwNTE5ODk=' },
 			
 // 			working in chrome
 //			usename: 'gerrit',
