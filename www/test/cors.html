@@ -13,6 +13,7 @@ Platz fuer Kommentare
 	<script src="js/jquery.cookie.js"></script> 
 	<script src="js/jquery.mobile.js"></script> 
 	<script> 
+	jQuery.support.cors = true;
 	$("#serverTest").live("click", function() {
 		$.ajax({
 			type: "OPTIONS",

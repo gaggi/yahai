@@ -15,6 +15,7 @@ Platz fuer Kommentare
 	<script> 
 	//just for IE
 	jQuery.support.cors = true;
+	
 	var state;
 	var value;
 
@@ -47,7 +48,8 @@ Platz fuer Kommentare
 			url: $.cookie('serveraddress')+':'+$.cookie('serverport')+'/fhem',
 			data: data,
 			dataType: type,
-            async: async
+            async: async,
+			cache: false
 		});
 	}
 	
