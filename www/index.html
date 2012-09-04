@@ -10,6 +10,7 @@ Platz fuer Kommentare
 	<link href="css/jquery.mobile.css" rel="stylesheet" type="text/css" /> 
 	<link href="css/split-view.css" rel="stylesheet" type="text/css" /> 
 	<script src="js/jquery.js"></script> 
+    <script src="js/jquery.base64.js"></script>
 	<script src="js/jquery.cookie.js"></script> 
 	<script src="js/jquery.mobile.js"></script> 
 	<script> 
@@ -63,10 +64,10 @@ Platz fuer Kommentare
 		var rooms = new Array();
 		var actors = new Array();
 		
-		$('#serveraddress').val($.cookie('serveraddress'));
-		$('#serverport').val($.cookie('serverport'));
-		$('#serverusername').val($.cookie('serverusername'));
-		$('#serverpassword').val($.cookie('serverpassword'));
+		$('#serverAddress').val($.cookie('serverAddress'));
+		$('#serverPort').val($.cookie('serverPort'));
+		$('#serverUsername').val($.cookie('serverUsername'));
+		$('#serverPassword').val($.cookie('serverPassword'));
 		
 		ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
 			$.each(data.Results, function(one, two) {
@@ -95,10 +96,8 @@ Platz fuer Kommentare
 				adddimmer(value.name,'Licht',value.room,value.state,value.value);
 			}else if(value.type == 'light') {
 				addlight(value.name,'Licht',value.room,value.state);
-			}
 			}else if(value.type == 'shutter') {
 				addshutter(value.name,'Rolladen',value.room,value.state);
-			}
 			}else if(value.type == 'switch') {
 				addswitch(value.name,'Schalter',value.room,value.state);
 			}
@@ -145,11 +144,8 @@ Platz fuer Kommentare
 							// do this if actor has webType light
 							} else if(value.type == 'light') {
 								$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
-							}
 							// do this if actor has webType shutter
-							} else if(value.type == 'shutter') {
-								
-							}							
+							} else if(value.type == 'shutter') {					
 							// do this if actor has webType switch
 							} else if(value.type == 'switch') {
 								
@@ -181,15 +177,15 @@ Platz fuer Kommentare
 	$("#serverTest").live("click", function() {
 		$.ajax({
             type: 'GET',
-			url: $('#serveraddress').val()+':'+$('#serverport').val()+'/fhem',
+			url: $('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
 			data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
 			dataType: 'json',
             async: false,
+			
+			crossDomain: true,
+			xhrFields: { withCredentials: true },
 
-			// Have to set specific ip-address on server cors allow header before this is working
-//			xhrFields: { withCredentials: true },
-//			username: "gerrit",
-//			password: "jessi14051989",
+			headers: { 'Authorization': 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') },
 
             success: function(data){
 			$('#serverTestLog').html('<h3><span style="color: green">Erfolg</span></h3>');
@@ -203,10 +199,10 @@ Platz fuer Kommentare
 	});	
 	
 	$("#saveConfig").live("click", function() {
-		$.cookie('serveraddress', $('#serveraddress').val(), { expires: 9999 });
-		$.cookie('serverport', $('#serverport').val(), { expires: 9999 });
-		$.cookie('serverusername', $('#serverusername').val(), { expires: 9999 });
-		$.cookie('serverpassword', $('#serverpassword').val(), { expires: 9999 });
+		$.cookie('serverAddress', $('#serverAddress').val(), { expires: 9999 });
+		$.cookie('serverPort', $('#serverPort').val(), { expires: 9999 });
+		$.cookie('serverUsername', $('#serverUsername').val(), { expires: 9999 });
+		$.cookie('serverPassword', $('#serverPassword').val(), { expires: 9999 });
 	});
 	
 	$.mobile.autoInitializePage = false
@@ -247,20 +243,20 @@ Platz fuer Kommentare
 					<div data-role="collapsible" data-content-theme="c">
 					<h3>Server</h3>
 						<div data-role="fieldcontain">
-							<label for="serveraddress">Server:</label>
-							<input type="text" name="serveraddress" id="serveraddress" value=""  />
+							<label for="serverAddress">Server:</label>
+							<input type="text" name="serverAddress" id="serverAddress" value=""  />
 						</div>	
 						<div data-role="fieldcontain">
-							<label for="serverport">Port:</label>
-							<input type="text" name="serverport" id="serverport" value=""  />
+							<label for="serverPort">Port:</label>
+							<input type="text" name="serverPort" id="serverPort" value=""  />
 						</div>	
 						<div data-role="fieldcontain">
-							<label for="serverusername">Benutzer:</label>
-							<input type="text" name="serverusername" id="serverusername" value=""  />
+							<label for="serverUsername">Benutzer:</label>
+							<input type="text" name="serverUsername" id="serverUsername" value=""  />
 						</div>	
 						<div data-role="fieldcontain">
-							<label for="serverpassword">Passwort:</label>
-							<input type="text" name="serverpassword" id="serverpassword" value=""  />
+							<label for="serverPassword">Passwort:</label>
+							<input type="text" name="serverPassword" id="serverPassword" value=""  />
 						</div>	
 						<a href="#" data-role="button" data-theme="c" id="serverTest">Testen</a>
 						<div data-role="collapsible" data-content-theme="" id="serverTestLog" data-collapsed="false"></div>
