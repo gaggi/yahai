@@ -72,8 +72,8 @@ Platz fuer Kommentare
 			async: async,
 			crossDomain: true,
 //			for use with basic auth have to make sure that OPTIONS request will not be executed in FHEM
-//			xhrFields: { withCredentials: credentials },
-//			headers: { 'Authorization': authHeader },
+			xhrFields: { withCredentials: credentials },
+			headers: { 'Authorization': authHeader },
 			cache: false
 		});
 	}
