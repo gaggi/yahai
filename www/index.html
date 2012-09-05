@@ -63,6 +63,7 @@ Platz fuer Kommentare
 	}
 	
 	function ajaxCall(data,type,async) {
+		console.log("function ajaxcall() triggered");
         return $.ajax({
             type: 'GET',
 			url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
@@ -70,6 +71,7 @@ Platz fuer Kommentare
 			dataType: type,
 			async: async,
 			crossDomain: true,
+//			for use with basic auth have to make sure that OPTIONS request will not be executed in FHEM
 //			xhrFields: { withCredentials: credentials },
 //			headers: { 'Authorization': authHeader },
 			cache: false
@@ -77,6 +79,7 @@ Platz fuer Kommentare
 	}
 	
 	function init() {
+		console.log("function init() triggered");
 		var rooms = new Array();
 		var actors = new Array();
 		
@@ -121,6 +124,7 @@ Platz fuer Kommentare
 	}
 
 	function longPoll() {
+		console.log("function longpoll() triggered");
 		var rooms = new Array();
 		var actors = new Array();
 		ajaxCall({ room: 'all', inform: 1, XHR: 1, CORS: 1 },'',true).success(function(data) {
