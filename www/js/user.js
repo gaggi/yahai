@@ -12,7 +12,21 @@ function adddimmer(id,name,room,state,value) {
 		var selectoff = 'selected';
 		value = '0';
 	}
-	$("#primary"+room).append('<div data-role="popup" id="popup'+id+'" data-theme="c" style="min-width: 295px;"><div data-role="header" data-theme="b" class="ui-corner-top"><h1>Dimmen</h1></div><input type="range" name="'+id+'" id="'+id+'val" value="'+value+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" /></div><div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select><a href="#popup'+id+'" data-rel="popup" data-role="button" data-inline="true" style="margin-top: -10px">Dimmen</a></div>');
+	$("#primary"+room).append(
+		'<div data-role="popup" id="popup'+id+'" data-theme="c" style="min-width: 295px;">'+
+			'<div data-role="header" data-theme="b" class="ui-corner-top">'+
+				'<h1>Dimmen</h1>'+
+			'</div>'+
+			'<input type="range" name="'+id+'" id="'+id+'val" value="'+value+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
+		'</div>'+
+		'<div data-role="fieldcontain">'+
+			'<label for="'+id+'flip">'+name+':</label>'+
+			'<select name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider">'+
+				'<option value="off" '+selectoff+'>Aus</option>'+
+				'<option value="on" '+selecton+'>An</option>'+
+			'</select>'+
+			'<a href="#popup'+id+'" data-rel="popup" data-role="button" data-inline="true" style="margin-top: -10px">Dimmen</a>'+
+		'</div>');
 }
 	
 function addlight(id,name,room,state) {
@@ -23,7 +37,14 @@ function addlight(id,name,room,state) {
 	} else {
 		var selectoff = 'selected';
 	}
-	$("#primary"+room).append('<div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select></div>');
+	$("#primary"+room).append(
+	'<div data-role="fieldcontain">'+
+		'<label for="'+id+'flip">'+name+':</label>'+
+		'<select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider">'+
+			'<option value="off" '+selectoff+'>Aus</option>'+
+			'<option value="on" '+selecton+'>An</option>'+
+		'</select>'+
+	'</div>');
 }
 	
 function addshutter(id,name,room,state) {
@@ -37,17 +58,18 @@ function addshutter(id,name,room,state) {
 	} else {
 		var checknone = 'checked';
 	}
-	$("#primary"+room).append('<div data-role="fieldcontain">'+
-    '<fieldset data-role="controlgroup" data-type="horizontal" >'+
-    	'<legend>'+name+'</legend>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'up" value="up" '+checkup+' />'+
-         	'<label for="'+id+'up">Auf</label>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'down" value="down" '+checkdown+' />'+
-         	'<label for="'+id+'down">Zu</label>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'none" value="none" '+checknone+' />'+
-         	'<label for="'+id+'none">Stop</label>'+
-    '</fieldset>'+
-'</div>');
+	$("#primary"+room).append(
+	'<div data-role="fieldcontain">'+
+		'<fieldset data-role="controlgroup" data-type="horizontal" >'+
+			'<legend>'+name+'</legend>'+
+				'<input type="radio" name="'+id+'" id="'+id+'up" value="up" '+checkup+' />'+
+				'<label for="'+id+'up">Auf</label>'+
+				'<input type="radio" name="'+id+'" id="'+id+'none" value="none" '+checknone+' />'+
+				'<label for="'+id+'none">Stop</label>'+
+				'<input type="radio" name="'+id+'" id="'+id+'down" value="down" '+checkdown+' />'+
+				'<label for="'+id+'down">Zu</label>'+
+		'</fieldset>'+
+	'</div>');
 }
 	
 function addswitch() {
