@@ -44,8 +44,8 @@ function addshutter(id,name,room,state) {
          	'<label for="'+id+'up">Auf</label>'+
          	'<input type="radio" name="'+id+'" id="'+id+'down" value="down" '+checkdown+' />'+
          	'<label for="'+id+'down">Zu</label>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'stop" value="stop" '+checknone+' />'+
-         	'<label for="'+id+'stop">Stop</label>'+
+         	'<input type="radio" name="'+id+'" id="'+id+'none" value="none" '+checknone+' />'+
+         	'<label for="'+id+'none">Stop</label>'+
     '</fieldset>'+
 '</div>');
 }
@@ -155,7 +155,7 @@ function longPoll() {
 								$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
 							} else {
 								if($('#'+value.name+'val').val() != value.value && value.state == 'on') {
-								$('#'+value.name+'val').val(value.value).slider().slider("refresh");
+									$('#'+value.name+'val').val(value.value).slider().slider("refresh");
 								}
 							}
 							if(value.state != 'on') {
@@ -165,7 +165,11 @@ function longPoll() {
 						} else if(value.type == 'light') {
 							$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
 						// do this if actor has webType shutter
-						} else if(value.type == 'shutter') {					
+						} else if(value.type == 'shutter') {
+//							$("input[name='"+value.name+"']:"+value.state).attr("checked",true).checkboxradio("refresh");
+							$('#'+value.name+value.state).attr('checked',true);
+							$('input[name='+value.name+']').checkboxradio().checkboxradio('refresh');
+//							$('#'+value.name).attr('checked',true).checkboxradio("refresh");
 						// do this if actor has webType switch
 						} else if(value.type == 'switch') {
 							
