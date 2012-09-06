@@ -25,11 +25,11 @@ Platz fuer Kommentare
 	function checkcredentials() {
 		if($.cookie('serverUsername') != '') {
 			console.log("username & password cookies set")
-			credentials = true;
-			authHeader = 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x');
+//			credentials = true;
+//			authHeader = 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x');
 		} else {
 			console.log("username & password not set");
-			credentials = false;
+//			credentials = false;
 		}
 	}
 	
@@ -64,18 +64,30 @@ Platz fuer Kommentare
 	
 	function ajaxCall(data,type,async) {
 		console.log("function ajaxcall() triggered");
-        return $.ajax({
-            type: 'GET',
-			url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
-			data: data,
-			dataType: type,
-			async: async,
-			crossDomain: true,
-//			for use with basic auth have to make sure that OPTIONS request will not be executed in FHEM
-			xhrFields: { withCredentials: credentials },
-			headers: { 'Authorization': authHeader },
-			cache: false
-		});
+		if($.cookie('serverUsername') != '') {
+			return $.ajax({
+				type: 'GET',
+				url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+				data: data,
+				dataType: type,
+				async: async,
+				crossDomain: true,
+	//			for use with basic auth have to make sure that OPTIONS request will not be executed in FHEM
+				xhrFields: { withCredentials: true },
+				headers: { 'Authorization': 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x') },
+				cache: false
+			});
+		} else {
+			return $.ajax({
+				type: 'GET',
+				url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+				data: data,
+				dataType: type,
+				async: async,
+				crossDomain: true,
+				cache: false
+			});
+		}
 	}
 	
 	function init() {
@@ -291,7 +303,7 @@ Platz fuer Kommentare
 	<script> 
 	checkcredentials();
 	init();
-    $.mobile.initializePage();
+	$.mobile.initializePage();
 	longPoll();
 	
 	</script> 
