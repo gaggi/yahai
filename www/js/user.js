@@ -4,11 +4,11 @@ var state;
 var value;
 	
 function adddimmer(id,name,room,state,value) {
+	var selecton = '';
+	var selectoff = '';
 	if(state == 'on') {
 		var selecton = 'selected';
-		var selectoff = '';
 	} else {
-		var selecton = '';
 		var selectoff = 'selected';
 		value = '0';
 	}
@@ -16,25 +16,35 @@ function adddimmer(id,name,room,state,value) {
 }
 	
 function addlight(id,name,room,state) {
+	var selecton = '';
+	var selectoff = '';
 	if(state == 'on') {
 		var selecton = 'selected';
-		var selectoff = '';
 	} else {
-		var selecton = '';
 		var selectoff = 'selected';
 	}
 	$("#primary"+room).append('<div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select></div>');
 }
 	
 function addshutter(id,name,room,state) {
+	var checkup = '';
+	var checkdown = '';
+	var checknone = '';
+	if(state == 'up') {
+		var checkup = 'checked';
+	} else if(state == 'down') {
+		var checkdown = 'checked';
+	} else {
+		var checknone = 'checked';
+	}
 	$("#primary"+room).append('<div data-role="fieldcontain">'+
     '<fieldset data-role="controlgroup" data-type="horizontal" >'+
     	'<legend>'+name+'</legend>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'up" value="up" checked="checked" />'+
+         	'<input type="radio" name="'+id+'" id="'+id+'up" value="up" '+checkup+' />'+
          	'<label for="'+id+'up">Auf</label>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'down" value="down"  />'+
+         	'<input type="radio" name="'+id+'" id="'+id+'down" value="down" '+checkdown+' />'+
          	'<label for="'+id+'down">Zu</label>'+
-         	'<input type="radio" name="'+id+'" id="'+id+'stop" value="stop"  />'+
+         	'<input type="radio" name="'+id+'" id="'+id+'stop" value="stop" '+checknone+' />'+
          	'<label for="'+id+'stop">Stop</label>'+
     '</fieldset>'+
 '</div>');
