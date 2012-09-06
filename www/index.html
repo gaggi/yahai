@@ -19,19 +19,6 @@ Platz fuer Kommentare
 	
 	var state;
 	var value;
-	var credentials = false;
-	var authHeader = '';
-
-	function checkcredentials() {
-		if($.cookie('serverUsername') != '') {
-			console.log("username & password cookies set")
-//			credentials = true;
-//			authHeader = 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x');
-		} else {
-			console.log("username & password not set");
-//			credentials = false;
-		}
-	}
 	
 	function adddimmer(id,name,room,state,value) {
 		if(state == 'on') {
@@ -72,7 +59,6 @@ Platz fuer Kommentare
 				dataType: type,
 				async: async,
 				crossDomain: true,
-	//			for use with basic auth have to make sure that OPTIONS request will not be executed in FHEM
 				xhrFields: { withCredentials: true },
 				headers: { 'Authorization': 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x') },
 				cache: false
@@ -301,7 +287,6 @@ Platz fuer Kommentare
 	
 	</body> 
 	<script> 
-	checkcredentials();
 	init();
 	$.mobile.initializePage();
 	longPoll();
