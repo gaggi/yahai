@@ -26,7 +26,18 @@ function addlight(id,name,room,state) {
 	$("#primary"+room).append('<div data-role="fieldcontain"><label for="'+id+'flip">'+name+':</label><select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider"><option value="off" '+selectoff+'>Aus</option><option value="on" '+selecton+'>An</option></select></div>');
 }
 	
-function addshutter() {
+function addshutter(id,name,room,state) {
+	$("#primary"+room).append('<div data-role="fieldcontain">'+
+    '<fieldset data-role="controlgroup" data-type="horizontal" >'+
+    	'<legend>'+name+'</legend>'+
+         	'<input type="radio" name="'+id+'" id="'+id+'up" value="up" checked="checked" />'+
+         	'<label for="'+id+'up">Auf</label>'+
+         	'<input type="radio" name="'+id+'" id="'+id+'down" value="down"  />'+
+         	'<label for="'+id+'down">Zu</label>'+
+         	'<input type="radio" name="'+id+'" id="'+id+'stop" value="stop"  />'+
+         	'<label for="'+id+'stop">Stop</label>'+
+    '</fieldset>'+
+'</div>');
 }
 	
 function addswitch() {
@@ -66,6 +77,7 @@ function init() {
 	$('#serverPort').val($.cookie('serverPort'));
 	$('#serverUsername').val($.cookie('serverUsername'));
 	$('#serverPassword').val($.cookie('serverPassword'));
+	$('#serverPrefix').val($.cookie('serverPrefix'));
 		
 	ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
 		$.each(data.Results, function(one, two) {
@@ -109,7 +121,7 @@ function longPoll() {
 		// catches any changes of FHEM devices
 		var response = data.split("\n");
 		$.each(response, function(key, value) {
-			// dont do anything if only buttons are pressed
+			// dont do anything if actor state isnt changed
 			if(value != '' && value.search(/schalter/i) == -1) {
 				ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
 					$.each(data.Results, function(one, two) {
@@ -174,7 +186,7 @@ $(".lightflip").live("change" , function() {
 
 $("#serverTest").live("click", function() {
 	$.ajax({
-           type: 'GET',
+		type: 'GET',
 		url: $('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
 		data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
 		dataType: 'json',
@@ -200,6 +212,7 @@ $("#saveConfig").live("click", function() {
 	$.cookie('serverPort', $('#serverPort').val(), { expires: 9999 });
 	$.cookie('serverUsername', $('#serverUsername').val(), { expires: 9999 });
 	$.cookie('serverPassword', $('#serverPassword').val(), { expires: 9999 });
+	$.cookie('serverPrefix', $('#serverPrefix').val(), { expires: 9999 });
 });
 
 $.mobile.autoInitializePage = false
