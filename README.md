@@ -31,4 +31,5 @@ trigger as follows
 	define prefix_your_device EnOcean ENOCEANID
 	
 You can choose whatever prefix you want and define it in the
-configuration page of yaHAi later.
+configuration page of yaHAi later or just leave it blank if 
+you control the device directly.
