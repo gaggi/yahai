@@ -79,7 +79,7 @@ function ajaxCall(data,type,async) {
 	if($.cookie('serverUsername') != '') {
 		return $.ajax({
 			type: 'GET',
-			url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+			url: 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
 			data: data,
 			dataType: type,
 			async: async,
@@ -91,7 +91,7 @@ function ajaxCall(data,type,async) {
 	} else {
 		return $.ajax({
 			type: 'GET',
-			url: $.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+			url: 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
 			data: data,
 			dataType: type,
 			async: async,
@@ -223,7 +223,7 @@ $(".lightflip").live("change" , function() {
 $("#serverTest").live("click", function() {
 	$.ajax({
 		type: 'GET',
-		url: $('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
+		url: 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
 		data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
 		dataType: 'json',
 		async: false,
