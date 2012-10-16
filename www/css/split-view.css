@@ -12,7 +12,7 @@ body { background: #dddddd; }
 
 /* .ui-mobile .jqm-themeswitcher { margin: 10px 25px 10px 10px;  } */
 
-.jqm-version {
+.version {
 	background: #f7cf57;
 	border: solid #fff;
 	border-width: 2px 0;
@@ -37,7 +37,7 @@ body { background: #dddddd; }
 	-o-box-shadow: 0 0 6px rgba(0,0,0,.40);
 	box-shadow: 0 0 6px rgba(0,0,0,.40);
 }
-.jqm-version b {
+.version b {
 	color: #a21412;
 }
 
@@ -74,10 +74,10 @@ p.intro {
 p.intro strong {
 	color:  #558e08;
 }
-.footer-docs {
+.footer-test {
 	padding: 5px 0;
 }
-.footer-docs p {
+.footer-test p {
 	margin-left:15px;
 	font-weight: normal;
 	font-size: .9em;
