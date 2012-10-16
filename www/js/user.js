@@ -128,7 +128,27 @@ function init() {
 		});
 	});
 	$.each(rooms, function(id, room) {
-		$('body').append('<div data-role="page" class="type-interior" id="page'+room+'"><div data-role="header" data-theme="b"><h1>'+room+'</h1><a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a><a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="fade">Einstellungen</a></div><div data-role="content"><div class="content-primary" id="primary'+room+'"></div><div class="content-secondary"><div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" ><h3>Raum w&auml;hlen</h3><ul data-role="listview" data-theme="c" data-dividertheme="d" class="rooms"></ul></div></div></div></div>');	
+		$('body').append(
+			'<div data-role="page" class="type-interior" id="page'+room+'">'+
+				'<div data-role="header" data-theme="b">'+
+					'<h1>'+room+'</h1>'+
+					'<a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a>'+
+					'<a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="fade">Einstellungen</a>'+
+				'</div>'+
+				'<div data-role="content">'+
+					'<div class="content-primary" id="primary'+room+'"></div>'+
+					'<div class="content-secondary">'+
+						'<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d" >'+
+							'<h3>Raum w&auml;hlen</h3>'+
+							'<ul data-role="listview" data-theme="c" data-dividertheme="d" class="rooms">'+
+							'</ul>'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+				'<div data-role="footer" class="footer-test" data-theme="c">'+
+					'<p>&copy; 2012 Gerrit Sturm</p>'+
+				'</div>'+
+			'</div>');	
 	});
 	$.each(rooms, function(id, room) {
 		$(".rooms").append('<li><a href="#page'+room+'" data-transition="fade">'+room+'</a></li>');
