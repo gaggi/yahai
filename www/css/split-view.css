@@ -75,6 +75,7 @@ p.intro strong {
 	color:  #558e08;
 }
 .footer-test {
+	visibility: hidden;
 	padding: 5px 0;
 }
 .footer-test p {
@@ -254,7 +255,9 @@ dd h4 { margin:15px 0 0 0; }
 /* docs site layout */
 
 @media all and (min-width: 650px){
-	
+	.footer-test {
+		visibility: visible;
+	}
 
 	.type-home .ui-content {
 		margin-top: 5px;
