@@ -133,7 +133,7 @@ function init() {
 				'<div data-role="header" data-theme="b">'+
 					'<h1>'+room+'</h1>'+
 					'<a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a>'+
-					'<a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="fade">Einstellungen</a>'+
+					'<a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="none">Einstellungen</a>'+
 				'</div>'+
 				'<div data-role="content">'+
 					'<div class="content-primary" id="primary'+room+'"></div>'+
@@ -151,7 +151,7 @@ function init() {
 			'</div>');	
 	});
 	$.each(rooms, function(id, room) {
-		$(".rooms").append('<li><a href="#page'+room+'" data-transition="fade">'+room+'</a></li>');
+		$(".rooms").append('<li><a href="#page'+room+'" data-transition="none">'+room+'</a></li>');
 	});
 	$.each(actors, function(key, value) {
 		if(value.type == 'dimmer') {
