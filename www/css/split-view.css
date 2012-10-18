@@ -334,7 +334,7 @@ dd h4 { margin:15px 0 0 0; }
 	}
 	/* fix up the collapsibles - expanded on desktop */
 	.content-secondary .ui-collapsible-inset {
-		margin-bottom: 2em;
+		margin-bottom: -1px;
 	}
 	.content-secondary .ui-collapsible-heading {
 		display: none;
