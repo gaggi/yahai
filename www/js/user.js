@@ -145,7 +145,7 @@ function init() {
 						'</div>'+
 					'</div>'+
 				'</div>'+
-				'<div data-role="footer" class="footer-test" data-theme="c">'+
+				'<div data-role="footer" class="footer-test" data-position="fixed" data-theme="c">'+
 					'<p>&copy; 2012 Gerrit Sturm</p>'+
 				'</div>'+
 			'</div>');	
