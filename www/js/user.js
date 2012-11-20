@@ -111,7 +111,7 @@ function init() {
 	$('#serverPassword').val($.cookie('serverPassword'));
 	$('#serverPrefix').val($.cookie('serverPrefix'));
 		
-	ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
+	ajaxCall({ cmd: 'jsonlist', XHR: 1 },'json',false).success(function(data) {
 		$.each(data.Results, function(one, two) {
 			$.each(two, function(three, four) {
 				$.each(four, function(five, six) {
@@ -169,13 +169,13 @@ function init() {
 function longPoll() {
 	var rooms = new Array();
 	var actors = new Array();
-	ajaxCall({ room: 'all', inform: 1, XHR: 1, CORS: 1 },'',true).success(function(data) {
+	ajaxCall({ room: 'all', inform: 1, XHR: 1 },'',true).success(function(data) {
 		// catches any changes of FHEM devices
 		var response = data.split("\n");
 		$.each(response, function(key, value) {
 			// dont do anything if actor state isnt changed
 			if(value != '' && value.search(/schalter/i) == -1) {
-				ajaxCall({ cmd: 'jsonlist', XHR: 1, CORS: 1 },'json',false).success(function(data) {
+				ajaxCall({ cmd: 'jsonlist', XHR: 1 },'json',false).success(function(data) {
 					$.each(data.Results, function(one, two) {
 						$.each(two, function(three, four) {
 							$.each(four, function(five, six) {
@@ -225,26 +225,26 @@ function longPoll() {
 }	
 	
 $(".dimmerval").live("slidestop" , function() {
-	ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1, CORS: 1 },'',true);
+	ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1 },'',true);
 });
 
 $(".dimmerflip").live("change" , function() {
 	if($(this).val() == 'on') {
-		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 100 10', XHR: 1, CORS: 1 },'',true);
+		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 100 10', XHR: 1 },'',true);
 	} else {
-		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 0 10', XHR: 1, CORS: 1 },'',true);
+		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 0 10', XHR: 1 },'',true);
 	}
 });
 
 $(".lightflip").live("change" , function() {
-	ajaxCall({ cmd: 'trigger nForTimer schalter_'+this.name+' on 0.1 released', XHR: 1, CORS: 1 },'',true);
+	ajaxCall({ cmd: 'trigger nForTimer schalter_'+this.name+' on 0.1 released', XHR: 1 },'',true);
 });
 
 $("#serverTest").live("click", function() {
 	$.ajax({
 		type: 'GET',
 		url: 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
-		data: { cmd: 'jsonlist', XHR: 1, CORS: 1 },
+		data: { cmd: 'jsonlist', XHR: 1 },
 		dataType: 'json',
 		async: false,
 		crossDomain: true,
