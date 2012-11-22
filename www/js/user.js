@@ -2,8 +2,34 @@ jQuery.support.cors = true;
 	
 var state;
 var value;
+var actors = new Array();
+
+function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
+	console.log(type+' '+name+' '+data1+' '+data2);								
+	if(type == 'light') {														// Only ON/OFF lights like Eltako FSR61
+		$('#'+name+'flip').val(data1).slider().slider("refresh");
+	} else if(type == 'dimmer') {												// Dimmers like Eltako FUD61
+		if(data1 != 'on' && data1 != 'off') {
+			$('#'+name+'val').val(data2).slider().slider("refresh");
+		} else {
+			$('#'+name+'flip').val(data1).slider().slider("refresh");
+		}
+	} else if(type == 'shutter') {												// Eltako FSB61
 	
-function adddimmer(id,name,room,state,value) {
+	}
+};
+
+function EnOcean_send() {														// placeholder for sending EnOcean status changes 
+};
+
+function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
+	console.log(type+' '+name+' '+data1+' '+data2);
+};
+
+function MAX_send() {															// placeholder for sending EnOcean status changes 
+};
+	
+function adddimmer(id,name,room,state,value) {									// adding the controls for a dimmer to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -29,7 +55,7 @@ function adddimmer(id,name,room,state,value) {
 		'</div>');
 }
 	
-function addlight(id,name,room,state) {
+function addlight(id,name,room,state) {											// adding the controls for a light to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -47,7 +73,7 @@ function addlight(id,name,room,state) {
 	'</div>');
 }
 	
-function addshutter(id,name,room,state) {
+function addshutter(id,name,room,state) {										// adding the controls for a shutter to the interface
 	var checkup = '';
 	var checkdown = '';
 	var checknone = '';
@@ -72,10 +98,10 @@ function addshutter(id,name,room,state) {
 	'</div>');
 }
 	
-function addswitch() {
+function addswitch() {															// adding the controls for a switch to the interface
 }
 	
-function ajaxCall(data,type,async) {
+function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
 	if($.cookie('serverUsername') != '') {
 		return $.ajax({
 			type: 'GET',
@@ -101,9 +127,8 @@ function ajaxCall(data,type,async) {
 	}
 }
 	
-function init() {
+function init() {																// initial sequence executed after the page is loaded calling other functions
 	var rooms = new Array();
-	var actors = new Array();
 	
 	$('#serverAddress').val($.cookie('serverAddress'));
 	$('#serverPort').val($.cookie('serverPort'));
@@ -132,7 +157,7 @@ function init() {
 			'<div data-role="page" class="type-interior" id="page'+room+'">'+
 				'<div data-role="header" data-theme="b">'+
 					'<h1>'+room+'</h1>'+
-					'<a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse">Startseite</a>'+
+					'<a href="#pageHome" data-icon="home" data-iconpos="notext" data-direction="reverse" data-transition="none">Startseite</a>'+
 					'<a href="#pageConfig" data-icon="gear" data-iconpos="notext" data-rel="dialog" data-transition="none">Einstellungen</a>'+
 				'</div>'+
 				'<div data-role="content">'+
@@ -166,9 +191,28 @@ function init() {
 	});
 }
 
-function longPoll() {
-	var rooms = new Array();
+function longPoll() {															// the longpoll request
+	var room = new Array();
 	var actors = new Array();
+	ajaxCall({ XHR: 1, inform: 'console' },'',true).success(function(data) {	// the request itself
+		var response = data.split("\n");										// we dont want the newline at the end
+		$.each(response, function(key, value) {
+			if(value != '' && value.search(/schalter/i) == -1) {				// we dont want the changes of buttons have to make an cookie for that later
+				result = value.replace(/<br>$/,'').split(' ');					// delete the break at the end and split the string into an array
+				$.each(window.actors, function(key, value) {
+					if(value.name == result[3]) {								// checking the type of the actor by going through all items in the actors array wich			
+						window[result[2] + '_get'](value.type,result[3],result[4],result[5]);		// is created by the init() function
+					}
+				});
+			}
+		});
+		longPoll();																// this ajax request has ended so we should start a new one
+	});
+}
+
+function longPollold() {														// old version of the longpolling leading in way to many requests and mess up everything
+	var rooms = new Array();													// will be deleted after i finished the shiney new longPoll() function completely
+	actors = new Array();
 	ajaxCall({ room: 'all', inform: 1, XHR: 1 },'',true).success(function(data) {
 		// catches any changes of FHEM devices
 		var response = data.split("\n");
@@ -224,11 +268,11 @@ function longPoll() {
 	});
 }	
 	
-$(".dimmerval").live("slidestop" , function() {
+$(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1 },'',true);
 });
 
-$(".dimmerflip").live("change" , function() {
+$(".dimmerflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	if($(this).val() == 'on') {
 		ajaxCall({ cmd: 'set schalter_'+this.name+' dimm 100 10', XHR: 1 },'',true);
 	} else {
@@ -236,11 +280,11 @@ $(".dimmerflip").live("change" , function() {
 	}
 });
 
-$(".lightflip").live("change" , function() {
+$(".lightflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	ajaxCall({ cmd: 'trigger nForTimer schalter_'+this.name+' on 0.1 released', XHR: 1 },'',true);
 });
 
-$("#serverTest").live("click", function() {
+$("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	$.ajax({
 		type: 'GET',
 		url: 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
@@ -263,12 +307,12 @@ $("#serverTest").live("click", function() {
 	});
 });	
 
-$("#saveConfig").live("click", function() {
+$("#saveConfig").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	$.cookie('serverAddress', $('#serverAddress').val(), { expires: 9999 });
 	$.cookie('serverPort', $('#serverPort').val(), { expires: 9999 });
 	$.cookie('serverUsername', $('#serverUsername').val(), { expires: 9999 });
 	$.cookie('serverPassword', $('#serverPassword').val(), { expires: 9999 });
 	$.cookie('serverPrefix', $('#serverPrefix').val(), { expires: 9999 });
 });
-
-$.mobile.autoInitializePage = false
+	
+//$.mobile.autoInitializePage = false

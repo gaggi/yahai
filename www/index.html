@@ -27,6 +27,19 @@ Platz fuer Kommentare
 				<div class="content-primary" id="primaryHome">
 					<p>Sie bedinden sich auf der Startseite von yaHAi.</p>
 					<p>Falls die Raumauswahl nicht funktioniert müssen ändern Sie bitte die Servereinstellungen im Men&uuml;.</p>
+					
+					<div data-role="fieldcontain">
+						<fieldset data-role="controlgroup" data-type="horizontal" >
+							<legend>testradio</legend>
+								<input type="radio" name="testradio" id="testradioup" value="up" />
+								<label for="testradioup" >Auf</label>
+								<input type="radio" name="testradio" id="testradionone" value="none" />
+								<label for="testradionone" data-icon="arrow-u">Stop</label>
+								<input type="radio" name="testradio" id="testradiodown" value="down" />
+								<label for="testradiodown" data-icon="arrow-u" >Zu</label>
+						</fieldset>
+					</div>
+					
 
 				</div>
 				<div class="content-secondary">
@@ -85,9 +98,9 @@ Platz fuer Kommentare
 		</div>
 	
 	</body> 
-	<script> 
+	<script>	
 	init();
-	$.mobile.initializePage();
+//	$.mobile.initializePage();
 	longPoll();
 	</script> 
 </html> 
