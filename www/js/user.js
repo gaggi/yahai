@@ -1,7 +1,13 @@
+//yaHAi - yet another Home Automation interface
+//Copyright (C) 2012  Gerrit Sturm
+//
+//This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+//This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 jQuery.support.cors = true;
 	
-var state;
-var value;
+var data1, data2;
 var actors = new Array();
 
 function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
@@ -16,7 +22,7 @@ function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean me
 		}
 	} else if(type == 'shutter') {												// Eltako FSB61
 	
-	}
+	} 
 };
 
 function EnOcean_send() {														// placeholder for sending EnOcean status changes 
@@ -24,15 +30,20 @@ function EnOcean_send() {														// placeholder for sending EnOcean status
 
 function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
 	console.log(type+' '+name+' '+data1+' '+data2);
+	if(type == 'thermostate') {													// Max Thermostat
+		if(data1 == "desiredTemperature:") {
+			$('#'+name+'val').val(data2).slider().slider("refresh");
+		}			
+	}
 };
 
 function MAX_send() {															// placeholder for sending EnOcean status changes 
 };
 	
-function adddimmer(id,name,room,state,value) {									// adding the controls for a dimmer to the interface
+function adddimmer(id,name,room,data1,data2) {									// adding the controls for a dimmer to the interface
 	var selecton = '';
 	var selectoff = '';
-	if(state == 'on') {
+	if(data1 == 'on') {
 		var selecton = 'selected';
 	} else {
 		var selectoff = 'selected';
@@ -43,10 +54,10 @@ function adddimmer(id,name,room,state,value) {									// adding the controls fo
 			'<div data-role="header" data-theme="b" class="ui-corner-top">'+
 				'<h1>Dimmen</h1>'+
 			'</div>'+
-			'<input type="range" name="'+id+'" id="'+id+'val" value="'+value+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
+			'<input type="range" name="'+id+'" id="'+id+'val" value="'+data2+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
 		'</div>'+
 		'<div data-role="fieldcontain">'+
-			'<label for="'+id+'flip">'+name+':</label>'+
+			'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
 			'<select name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider">'+
 				'<option value="off" '+selectoff+'>Aus</option>'+
 				'<option value="on" '+selecton+'>An</option>'+
@@ -65,7 +76,7 @@ function addlight(id,name,room,state) {											// adding the controls for a l
 	}
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'flip">'+name+':</label>'+
+		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
 		'<select name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider">'+
 			'<option value="off" '+selectoff+'>Aus</option>'+
 			'<option value="on" '+selecton+'>An</option>'+
@@ -74,33 +85,36 @@ function addlight(id,name,room,state) {											// adding the controls for a l
 }
 	
 function addshutter(id,name,room,state) {										// adding the controls for a shutter to the interface
-	var checkup = '';
-	var checkdown = '';
-	var checknone = '';
 	if(state == 'up') {
-		var checkup = 'checked';
+		var activeup = 'ui-btn-active';
 	} else if(state == 'down') {
-		var checkdown = 'checked';
+		var activedown = 'ui-btn-active';
 	} else {
-		var checknone = 'checked';
+		var activestop = 'ui-btn-active';
 	}
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
-		'<fieldset data-role="controlgroup" data-type="horizontal" >'+
-			'<legend>'+name+'</legend>'+
-				'<input type="radio" name="'+id+'" id="'+id+'up" value="up" '+checkup+' />'+
-				'<label for="'+id+'up">Auf</label>'+
-				'<input type="radio" name="'+id+'" id="'+id+'none" value="none" '+checknone+' />'+
-				'<label for="'+id+'none">Stop</label>'+
-				'<input type="radio" name="'+id+'" id="'+id+'down" value="down" '+checkdown+' />'+
-				'<label for="'+id+'down">Zu</label>'+
+		'<fieldset data-role="controlgroup" data-type="horizontal">'+
+			'<legend><h5>Rolladen:</h5></legend>'+
+			'<a href="#" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="'+activeup+'">up</a>'+
+			'<a href="#" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="'+activestop+'">stop</a>'+
+			'<a href="#" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="'+activedown+'">down</a>'+
 		'</fieldset>'+
 	'</div>');
 }
 	
-function addswitch() {															// adding the controls for a switch to the interface
+function addthermostate(id,name,room,data1,data2) {								// adding the controls for a thermostate to the interface
+	$("#primary"+room).append(
+	'<div data-role="fieldcontain">'+
+		'<label for="'+id+'val" ><h5>Thermostat:</h5></label>'+	
+		'<input type="range" name="'+id+'" id="'+id+'val" value="'+data1+'" min="5" max="30" step="0.5" data-highlight="true" class="thermostateval" style="margin-left:5px;" />'+
+	'</div>');
 }
-	
+
+function addswitch() {
+
+}
+
 function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
 	if($.cookie('serverUsername') != '') {
 		return $.ajax({
@@ -143,10 +157,13 @@ function init() {																// initial sequence executed after the page is 
 					if(six.ATTR && six.ATTR.webType) {
 						if(jQuery.inArray(six.ATTR.room,rooms) == -1) { rooms.push(six.ATTR.room); }
 							$.each(six.READINGS, function(seven, eight) {
-								if(eight.state) { state = eight.state; }
-								if(eight.dimmValue) { value = eight.dimmValue; }
+								if(eight.state) { data1 = eight.state; }								// for enocean dimmers
+								if(eight.dimmValue) { data2 = eight.dimmValue; }
+								if(eight.desiredTemperature) { data1 = eight.desiredTemperature; }	// for max thermostates
+								if(eight.valveposition) { data2 = eight.valveposition; }
+//								if(eight.temperature) { temp = eight.temperature; }						// deactivated because not displayed at the moment
 							});
-							actors.push({"type": six.ATTR.webType, "name": six.NAME, "room": six.ATTR.room, "state": state, "value": value});
+							actors.push({"type": six.ATTR.webType, "name": six.NAME, "room": six.ATTR.room, "data1": data1, "data2": data2});
 					}
 				});
 			});
@@ -180,13 +197,15 @@ function init() {																// initial sequence executed after the page is 
 	});
 	$.each(actors, function(key, value) {
 		if(value.type == 'dimmer') {
-			adddimmer(value.name,'Licht',value.room,value.state,value.value);
+			adddimmer(value.name,'Licht',value.room,value.data1,value.data2);
 		}else if(value.type == 'light') {
-			addlight(value.name,'Licht',value.room,value.state);
+			addlight(value.name,'Licht',value.room,value.data1);
 		}else if(value.type == 'shutter') {
-			addshutter(value.name,'Rolladen',value.room,value.state);
+			addshutter(value.name,'Rolladen',value.room,value.data1);
 		}else if(value.type == 'switch') {
-			addswitch(value.name,'Schalter',value.room,value.state);
+			addswitch(value.name,'Schalter',value.room,value.data1);
+		}else if(value.type == 'thermostate') {
+			addthermostate(value.name,'Thermostat',value.room,value.data1,data2);
 		}
 	});
 }
@@ -200,8 +219,8 @@ function longPoll() {															// the longpoll request
 			if(value != '' && value.search(/schalter/i) == -1) {				// we dont want the changes of buttons have to make an cookie for that later
 				result = value.replace(/<br>$/,'').split(' ');					// delete the break at the end and split the string into an array
 				$.each(window.actors, function(key, value) {
-					if(value.name == result[3]) {								// checking the type of the actor by going through all items in the actors array wich			
-						window[result[2] + '_get'](value.type,result[3],result[4],result[5]);		// is created by the init() function
+					if(value.name == result[3]) {													// checking the type of the actor by going through all items in the actors 			
+						window[result[2] + '_get'](value.type,result[3],result[4],result[5]);		// array wich is created by the init() function
 					}
 				});
 			}
@@ -267,6 +286,11 @@ function longPollold() {														// old version of the longpolling leading 
 		longPoll();
 	});
 }	
+
+$(".thermostateval").live("slidestop" , function() {
+	console.log('setting settemp of '+this.name+' to '+this.value);
+	ajaxCall({ cmd: 'set '+this.name+' desiredTemperature '+this.value, XHR: 1 },'',true);
+});
 	
 $(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1 },'',true);
