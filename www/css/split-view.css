@@ -223,6 +223,10 @@ dd h4 { margin:15px 0 0 0; }
 
 /* docs site layout */
 
+	.ui-field-contain input.ui-input-text, 
+	.ui-field-contain textarea.ui-input-text, 
+	.ui-field-contain .ui-input-search { width: 98%; display: inline-block; } 
+
 @media all and (min-width: 650px){
 	.ui-field-contain input.ui-input-text, 
 	.ui-field-contain textarea.ui-input-text, 
