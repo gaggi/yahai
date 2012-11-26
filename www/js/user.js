@@ -9,6 +9,7 @@ jQuery.support.cors = true;
 	
 var data1, data2, timeout;
 var actors = new Array();
+var count = 0;
 
 function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
 	console.log('RECEIVING: EnOcean '+type+' '+name+' '+data1+' '+data2);								
@@ -221,7 +222,7 @@ function init() {																// initial sequence executed after the page is 
 			'</div>');	
 	});
 	$.each(rooms, function(id, room) {
-		$(".rooms").append('<li><a href="#page'+room+'" data-transition="none">'+room+'</a></li>');
+		$(".rooms").append('<li id="room'+id+'" class="room room'+id+'"><a href="#page'+room+'" data-transition="none">'+room+'</a></li>');
 	});
 	
 	$.each(actors, function(key, value) {												// could be delete if we let the longpolling go throug the created things
@@ -238,6 +239,11 @@ function init() {																// initial sequence executed after the page is 
 		}
 	});
 }
+
+$(".room").live("click", function() {											// fixing not activating menu buttons
+	$(".room").removeClass("ui-btn-active");
+	$("."+this.id).addClass("ui-btn-active");
+});
 
 function longPoll() {															// the longpoll request
 	var room = new Array();
