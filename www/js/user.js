@@ -7,7 +7,7 @@
 
 jQuery.support.cors = true;
 	
-var data1, data2;
+var data1, data2, timeout;
 var actors = new Array();
 
 function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
@@ -32,7 +32,7 @@ function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! mess
 	console.log(type+' '+name+' '+data1+' '+data2);
 	if(type == 'thermostate') {													// Max Thermostat
 		if(data1 == "desiredTemperature:") {
-			$('#'+name+'val').val(data2).slider().slider("refresh");
+			$('#'+name).val(data2);
 		}			
 	}
 };
@@ -104,11 +104,14 @@ function addshutter(id,name,room,state) {										// adding the controls for a 
 }
 	
 function addthermostate(id,name,room,data1,data2) {								// adding the controls for a thermostate to the interface
-	$("#primary"+room).append(
+	$("#primary"+room).append(	
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'val" ><h5>Thermostat:</h5></label>'+	
-		'<input type="range" name="'+id+'" id="'+id+'val" value="'+data1+'" min="5" max="30" step="0.5" data-highlight="true" class="thermostateval" style="margin-left:5px;" />'+
-	'</div>');
+		'<label for="'+id+'"><h5>Thermostat:</h5></label>'+
+		'<input type="text" id="'+id+'" value="'+data1+'" style="width: 50px;margin-right:10px;" />'+
+		'<a href="#" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'valup" class="thermostateval">up</a>'+
+		'<a href="#" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'valdown" class="thermostateval">down</a>'+
+	'</div>	');	
+
 }
 
 function addswitch() {
@@ -286,11 +289,6 @@ function longPollold() {														// old version of the longpolling leading 
 		longPoll();
 	});
 }	
-
-$(".thermostateval").live("slidestop" , function() {
-	console.log('setting settemp of '+this.name+' to '+this.value);
-	ajaxCall({ cmd: 'set '+this.name+' desiredTemperature '+this.value, XHR: 1 },'',true);
-});
 	
 $(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	ajaxCall({ cmd: 'set schalter_'+this.name+' dimm '+this.value+' 10', XHR: 1 },'',true);
@@ -339,4 +337,20 @@ $("#saveConfig").live("click", function() {										// sending user input to FH
 	$.cookie('serverPrefix', $('#serverPrefix').val(), { expires: 9999 });
 });
 	
+$('.thermostateval').live("click", function() {
+	if(timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+    }
+	var name = this.name;
+	timeout = setTimeout(function(){
+		ajaxCall({ cmd: 'set '+name+' desiredTemperature '+$('#'+name).val(), XHR: 1 },'',true),
+		console.log('setting settemp of '+name+' to '+$('#'+name).val());
+	}, 2000);
+	if(this.id == name+'up') {
+		$('#'+name).val(Number($('#'+name).val())+0.5);
+	} else {
+		$('#'+name).val(Number($('#'+name).val())-0.5);
+	}
+})
 //$.mobile.autoInitializePage = false

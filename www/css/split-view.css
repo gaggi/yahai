@@ -12,6 +12,7 @@ body { background: #dddddd; }
 
 /* .ui-mobile .jqm-themeswitcher { margin: 10px 25px 10px 10px;  } */
 
+h5 { margin-top:1em; font-size:.9em; }
 h2 { margin:1.2em 0 .4em 0; }
 p code { font-size:1.2em; font-weight:bold; } 
 h4 code {font-size:1.2em; font-weight:bold; }
