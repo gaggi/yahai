@@ -108,8 +108,8 @@ function addthermostate(id,name,room,data1,data2) {								// adding the control
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'"><h5>Thermostat:</h5></label>'+
 		'<input type="text" id="'+id+'" value="'+data1+'" style="width: 50px;margin-right:10px;" />'+
-		'<a href="#" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'valup" class="thermostateval">up</a>'+
-		'<a href="#" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'valdown" class="thermostateval">down</a>'+
+		'<a href="#" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'up" class="thermostateval">up</a>'+
+		'<a href="#" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'" id="'+id+'down" class="thermostateval">down</a>'+
 	'</div>	');	
 
 }

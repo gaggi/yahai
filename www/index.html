@@ -51,6 +51,10 @@ Platz fuer Kommentare
 				<form action="#" method="post" data-ajax="false">
 					<div data-role="collapsible" data-content-theme="c">
 					<h3>Sicherheit</h3>
+						<div data-role="fieldcontain">
+							<label for="serverPrefix">Prefix:</label>
+							<input type="text" name="serverPrefix" id="serverPrefix" value="" />
+						</div>
 					</div>
 					<div data-role="collapsible" data-content-theme="c">
 					<h3>Server</h3>
@@ -68,12 +72,8 @@ Platz fuer Kommentare
 						</div>	
 						<div data-role="fieldcontain">
 							<label for="serverPassword">Passwort:</label>
-							<input type="text" name="serverPassword" id="serverPassword" value=""  />
+							<input type="password" name="serverPassword" id="serverPassword" value=""  />
 						</div>	
-						<div data-role="fieldcontain">
-							<label for="serverPrefix">Prefix:</label>
-							<input type="text" name="serverPrefix" id="serverPrefix" value="" />
-						</div>
 						<a href="#" data-role="button" data-theme="c" id="serverTest">Testen</a>
 						<div data-role="collapsible" data-content-theme="" id="serverTestLog" data-collapsed="false"></div>
 					</div>				
