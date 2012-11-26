@@ -21,7 +21,14 @@ function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean me
 			$('#'+name+'flip').val(data1).slider().slider("refresh");
 		}
 	} else if(type == 'shutter') {												// Eltako FSB61
-	
+		$('.'+name).removeClass('ui-btn-active');
+		if(data1 == "up") {
+			$('#'+name+'up').addClass('ui-btn-active');
+		} else if(data1 == "down") {
+			$('#'+name+'down').addClass('ui-btn-active');
+		} else {
+			$('#'+name+'stop').addClass('ui-btn-active');
+		}
 	} 
 };
 
@@ -96,9 +103,9 @@ function addShutter(id,name,sendActor,room,state) {										// adding the contr
 	'<div data-role="fieldcontain">'+
 		'<fieldset data-role="controlgroup" data-type="horizontal">'+
 			'<legend><h5>Rolladen:</h5></legend>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="'+activeup+'">up</a>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="'+activestop+'">stop</a>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="'+activedown+'">down</a>'+
+			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="shutterval '+id+' '+activedown+'">down</a>'+
+			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="shutterval '+id+' '+activestop+'">stop</a>'+
+			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="shutterval '+id+' '+activeup+'">up</a>'+
 		'</fieldset>'+
 	'</div>');
 }
@@ -338,7 +345,7 @@ $('.thermostateval').live("click", function() {									// sending user input to
     }
 	var actor = this.getAttribute("data-send-actor");
 	timeout = setTimeout(function(){
-		ajaxCall({ cmd: 'set '+actor+' desiredTemperature '+$('#'+actor+'val').val(), XHR: 1 },'',true),
+		ajaxCall({ cmd: 'set '+actor+' desiredTemperature '+$('#'+actor+'val').val(), XHR: 1 },'',true);
 		console.log('SENDING: set '+actor+' desiredTemperature '+$('#'+actor+'val').val());		// some logging
 	}, 2000);																	// wait 2000 ms for another action
 	if(this.id == this.name+'up') {
@@ -346,6 +353,18 @@ $('.thermostateval').live("click", function() {									// sending user input to
 	} else {
 		$('#'+this.name).val(Number($('#'+this.name).val())-0.5);
 	}
+});
+
+$('.shutterval').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+	if(this.id == this.getAttribute("data-actor")+'up') {
+		ajaxCall({ cmd: 'trigger nForTimer '+this.getAttribute("data-send-actor")+' up 0.1 released', XHR: 1 },'',true);
+		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' up 0.1 released');
+	} else if(this.id == this.getAttribute("data-actor")+'stop') {
+		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' stop 0.1 released');
+	} else if(this.id == this.getAttribute("data-actor")+'down') {
+		ajaxCall({ cmd: 'trigger nForTimer '+this.getAttribute("data-send-actor")+' down 0.1 released', XHR: 1 },'',true);
+		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' down 0.1 released');
+	} 
 });
 
 $("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions

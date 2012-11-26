@@ -221,13 +221,13 @@ dd h4 { margin:15px 0 0 0; }
 	text-decoration: none;
 }
 
-.ui-field-contain input.ui-input-text, 
-.ui-field-contain textarea.ui-input-text, 
-.ui-field-contain .ui-input-search { width: 73%; display: inline-block; } 
-
 /* docs site layout */
 
 @media all and (min-width: 650px){
+	.ui-field-contain input.ui-input-text, 
+	.ui-field-contain textarea.ui-input-text, 
+	.ui-field-contain .ui-input-search { width: 73%; display: inline-block; } 
+
 	.footer-test {
 		visibility: visible;
 	}
