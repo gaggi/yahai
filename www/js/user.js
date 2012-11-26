@@ -32,7 +32,7 @@ function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! mess
 	console.log('RECEIVING: MAX! '+type+' '+name+' '+data1+' '+data2);
 	if(type == 'thermostate') {													// Max Thermostat
 		if(data1 == "desiredTemperature:") {
-			$('#'+name).val(data2);
+			$('#'+name+'val').val(data2);
 		}			
 	}
 };
