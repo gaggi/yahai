@@ -221,8 +221,9 @@ dd h4 { margin:15px 0 0 0; }
 	text-decoration: none;
 }
 
-
-
+.ui-field-contain input.ui-input-text, 
+.ui-field-contain textarea.ui-input-text, 
+.ui-field-contain .ui-input-search { width: 73%; display: inline-block; } 
 
 /* docs site layout */
 
@@ -332,7 +333,7 @@ dd h4 { margin:15px 0 0 0; }
 	}
 	
 }
-@media all and (min-width: 750px){
+@media all and (min-width: 650px){
 	.type-home .ui-content {
 		background-position: 39%;
 	}
