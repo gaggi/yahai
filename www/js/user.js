@@ -102,11 +102,11 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {									//
 			'<div data-role="header" data-theme="b" class="ui-corner-top">'+
 				'<h1>Dimmen</h1>'+
 			'</div>'+
-			'<input type="range" data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
+			'<input type="range" data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="slider" style="margin-left:5px;" />'+
 		'</div>'+
 		'<div data-role="fieldcontain">'+
 			'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
-			'<select data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider">'+
+			'<select data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 				'<option value="off" '+selectoff+'>Aus</option>'+
 				'<option value="on" '+selecton+'>An</option>'+
 			'</select>'+
@@ -125,7 +125,7 @@ function addLight(id,protocol,name,sendActor,room,state) {											// adding t
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
-		'<select data-protocol="'+protocol+'" data-web-type="light" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider">'+
+		'<select data-protocol="'+protocol+'" data-web-type="light" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 			'<option value="off" '+selectoff+'>Aus</option>'+
 			'<option value="on" '+selecton+'>An</option>'+
 		'</select>'+
@@ -144,9 +144,9 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 	'<div data-role="fieldcontain">'+
 		'<fieldset data-role="controlgroup" data-type="horizontal">'+
 			'<legend><h5>Rolladen:</h5></legend>'+
-			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="shutterval '+id+' '+activedown+'">down</a>'+
-			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="shutterval '+id+' '+activestop+'">stop</a>'+
-			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="shutterval '+id+' '+activeup+'">up</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="button '+id+' '+activedown+'">down</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="button '+id+' '+activestop+'">stop</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="button '+id+' '+activeup+'">up</a>'+
 		'</fieldset>'+
 	'</div>');
 }
@@ -156,8 +156,8 @@ function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp)
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'val"><h5>Thermostat:</h5></label>'+
 		'<input data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" type="text" data-mintemp="'+minTemp+'" data-maxtemp="'+maxTemp+'" id="'+id+'val" value="'+setTemp+'" style="width: 50px;margin-right:10px;" />'+
-		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="thermostateval">down</a>'+
-		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="thermostateval">up</a>'+
+		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="button">down</a>'+
+		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="button">up</a>'+
 	'</div>	');	
 
 }
@@ -313,23 +313,15 @@ function longPoll() {															// the longpolling request
 	return;
 }	
 
-$(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM 
+$(".slider").live("slidestop" , function() {									// sending user input to FHEM 
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$(".dimmerflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$(".switch").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$(".lightflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	window[this.getAttribute("data-protocol") + '_send'](this);
-});
-
-$('.thermostateval').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	window[this.getAttribute("data-protocol") + '_send'](this);
-});
-
-$('.shutterval').live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$('.button').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
