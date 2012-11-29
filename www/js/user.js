@@ -5,36 +5,13 @@
 //This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-$.getScript("./js/EnOcean.js", function() {});
+$.getScript("./js/EnOcean.js", function() {});										// contains EnOcean_get and _send function
+$.getScript("./js/MAX.js", function() {});											// contains MAX_get and _send function
 
 jQuery.support.cors = true;
 	
 var data1, data2, timeout, result, count = 0;
 var actors = new Array();
-
-function EnOcean_get(webType,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
-	console.log('RECEIVING: EnOcean '+webType+' '+name+' '+data1+' '+data2);								
-	if(webType == 'light') {														// Only ON/OFF lights like Eltako FSR61
-		$('#'+name+'flip').val(data1).slider().slider("refresh");
-	} else if(webType == 'dimmer') {												// Dimmers like Eltako FUD61
-		if(data1 != 'on' && data1 != 'off') {
-			$('#'+name+'val').val(data2).slider().slider("refresh");
-		} else {
-			$('#'+name+'flip').val(data1).slider().slider("refresh");
-		}
-	} else if(webType == 'shutter') {												// Eltako FSB61
-		$('.'+name).removeClass('ui-btn-active');
-		if(data1 == "up") {
-			$('#'+name+'up').addClass('ui-btn-active');
-		} else if(data1 == "down") {
-			$('#'+name+'down').addClass('ui-btn-active');
-		} else {
-			$('#'+name+'stop').addClass('ui-btn-active');
-		}	
-	} 
-};
-
-function EnOcean_send(name) {														// placeholder for sending EnOcean status changes 
 	if(name.getAttribute("data-web-type") == 'dimmer') {
 		if(name.value == 'on') {
 			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 100 10', XHR: 1 },'',true);
