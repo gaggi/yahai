@@ -7,21 +7,20 @@
 
 jQuery.support.cors = true;
 	
-var data1, data2, timeout;
+var data1, data2, timeout, result, count = 0;
 var actors = new Array();
-var count = 0;
 
-function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
-	console.log('RECEIVING: EnOcean '+type+' '+name+' '+data1+' '+data2);								
-	if(type == 'light') {														// Only ON/OFF lights like Eltako FSR61
+function EnOcean_get(webType,name,data1,data2) { 									// Parsing the EnOcean messages recieved via longPoll request
+	console.log('RECEIVING: EnOcean '+webType+' '+name+' '+data1+' '+data2);								
+	if(webType == 'light') {														// Only ON/OFF lights like Eltako FSR61
 		$('#'+name+'flip').val(data1).slider().slider("refresh");
-	} else if(type == 'dimmer') {												// Dimmers like Eltako FUD61
+	} else if(webType == 'dimmer') {												// Dimmers like Eltako FUD61
 		if(data1 != 'on' && data1 != 'off') {
 			$('#'+name+'val').val(data2).slider().slider("refresh");
 		} else {
 			$('#'+name+'flip').val(data1).slider().slider("refresh");
 		}
-	} else if(type == 'shutter') {												// Eltako FSB61
+	} else if(webType == 'shutter') {												// Eltako FSB61
 		$('.'+name).removeClass('ui-btn-active');
 		if(data1 == "up") {
 			$('#'+name+'up').addClass('ui-btn-active');
@@ -29,11 +28,36 @@ function EnOcean_get(type,name,data1,data2) { 									// Parsing the EnOcean me
 			$('#'+name+'down').addClass('ui-btn-active');
 		} else {
 			$('#'+name+'stop').addClass('ui-btn-active');
-		}
+		}	
 	} 
 };
 
-function EnOcean_send() {														// placeholder for sending EnOcean status changes 
+function EnOcean_send(name) {														// placeholder for sending EnOcean status changes 
+	if(name.getAttribute("data-web-type") == 'dimmer') {
+		if(name.value == 'on') {
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 100 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 100 10');		// some logging
+		} else if(name.value == 'off') {
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 0 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 0 10');			// some logging
+		} else {
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10');								// some logging
+		}
+	} else if(name.getAttribute("data-web-type") == 'light') {
+		ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released', XHR: 1 },'',true);
+		console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released');		// some logging
+	} else if(name.getAttribute("data-web-type") == 'shutter') {
+		if(name.id == name.getAttribute("data-actor")+'up') {
+			ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' up 0.1 released', XHR: 1 },'',true);
+			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' up 0.1 released');
+		} else if(name.id == name.getAttribute("data-actor")+'stop') {
+			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' stop 0.1 released');
+		} else if(name.id == name.getAttribute("data-actor")+'down') {
+			ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' down 0.1 released', XHR: 1 },'',true);
+			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' down 0.1 released');
+		} 
+	} 
 };
 
 function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
@@ -45,10 +69,26 @@ function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! mess
 	}
 };
 
-function MAX_send() {															// placeholder for sending EnOcean status changes 
+function MAX_send(name) {															// placeholder for sending EnOcean status changes 
+	if(name.getAttribute("data-web-type") == 'thermostate') {
+		if(timeout) {																// restart timeout loop if we have one allready running
+			clearTimeout(timeout);
+			timeout = null;
+		}
+		timeout = setTimeout(function(){
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' desiredTemperature '+$('#'+name.getAttribute("data-send-actor")+'val').val(), XHR: 1 },'',true),
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' desiredTemperature '+$('#'+name.getAttribute("data-send-actor")+'val').val());		// some logging
+		}, 2000);																	// wait 2000 ms for another action
+
+		if(name.id == name.name+'up') {
+			$('#'+name.name).val(Number($('#'+name.name).val())+0.5);				// the steps should maybe be an option in settings or better in fhem.cfg
+		} else {
+			$('#'+name.name).val(Number($('#'+name.name).val())-0.5);
+		}
+	}
 };
 	
-function addDimmer(id,name,sendActor,room,state,dimmValue) {									// adding the controls for a dimmer to the interface
+function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {									// adding the controls for a dimmer to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -62,11 +102,11 @@ function addDimmer(id,name,sendActor,room,state,dimmValue) {									// adding t
 			'<div data-role="header" data-theme="b" class="ui-corner-top">'+
 				'<h1>Dimmen</h1>'+
 			'</div>'+
-			'<input type="range" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
+			'<input type="range" data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="dimmerval" style="margin-left:5px;" />'+
 		'</div>'+
 		'<div data-role="fieldcontain">'+
 			'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
-			'<select data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider">'+
+			'<select data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="dimmerflip" data-role="slider">'+
 				'<option value="off" '+selectoff+'>Aus</option>'+
 				'<option value="on" '+selecton+'>An</option>'+
 			'</select>'+
@@ -74,7 +114,7 @@ function addDimmer(id,name,sendActor,room,state,dimmValue) {									// adding t
 		'</div>');
 }
 	
-function addLight(id,name,sendActor,room,state) {											// adding the controls for a light to the interface
+function addLight(id,protocol,name,sendActor,room,state) {											// adding the controls for a light to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -85,14 +125,14 @@ function addLight(id,name,sendActor,room,state) {											// adding the contro
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
-		'<select data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider">'+
+		'<select data-protocol="'+protocol+'" data-web-type="light" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="lightflip" data-role="slider">'+
 			'<option value="off" '+selectoff+'>Aus</option>'+
 			'<option value="on" '+selecton+'>An</option>'+
 		'</select>'+
 	'</div>');
 }
 	
-function addShutter(id,name,sendActor,room,state) {										// adding the controls for a shutter to the interface
+function addShutter(id,protocol,name,sendActor,room,state) {										// adding the controls for a shutter to the interface
 	if(state == 'up') {
 		var activeup = 'ui-btn-active';
 	} else if(state == 'down') {
@@ -104,20 +144,20 @@ function addShutter(id,name,sendActor,room,state) {										// adding the contr
 	'<div data-role="fieldcontain">'+
 		'<fieldset data-role="controlgroup" data-type="horizontal">'+
 			'<legend><h5>Rolladen:</h5></legend>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="shutterval '+id+' '+activedown+'">down</a>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="shutterval '+id+' '+activestop+'">stop</a>'+
-			'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="shutterval '+id+' '+activeup+'">up</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="shutterval '+id+' '+activedown+'">down</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="shutterval '+id+' '+activestop+'">stop</a>'+
+			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="shutterval '+id+' '+activeup+'">up</a>'+
 		'</fieldset>'+
 	'</div>');
 }
 	
-function addThermostate(id,name,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
+function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
 	$("#primary"+room).append(	
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'val"><h5>Thermostat:</h5></label>'+
-		'<input data-actor="'+id+'" data-send-actor="'+sendActor+'" type="text" data-mintemp="'+minTemp+'" data-maxtemp="'+maxTemp+'" id="'+id+'val" value="'+setTemp+'" style="width: 50px;margin-right:10px;" />'+
-		'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="thermostateval">down</a>'+
-		'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="thermostateval">up</a>'+
+		'<input data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" type="text" data-mintemp="'+minTemp+'" data-maxtemp="'+maxTemp+'" id="'+id+'val" value="'+setTemp+'" style="width: 50px;margin-right:10px;" />'+
+		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="thermostateval">down</a>'+
+		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="thermostateval">up</a>'+
 	'</div>	');	
 
 }
@@ -182,15 +222,15 @@ function init() {																// initial sequence executed after the page is 
 							}
 							
 							if(six.ATTR.webType == "light") {
-								actors.push({"type": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
 							} else if(six.ATTR.webType == "dimmer") {
-								actors.push({"type": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state, "dimmValue": value});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state, "dimmValue": value});
 							} else if(six.ATTR.webType == "shutter") {
-								actors.push({"type": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
 							} else if(six.ATTR.webType == "switch") {
-								actors.push({"type": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
 							} else if(six.ATTR.webType == "thermostate") {
-								actors.push({"type": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
 							}
 					}
 				});
@@ -222,155 +262,75 @@ function init() {																// initial sequence executed after the page is 
 			'</div>');	
 	});
 	$.each(rooms, function(id, room) {
-		$(".rooms").append('<li id="room'+id+'" class="room room'+id+'"><a href="#page'+room+'" data-transition="none">'+room+'</a></li>');
+		$(".rooms").append('<li><a href="#page'+room+'" data-transition="none">'+room+'</a></li>');
 	});
 	
 	$.each(actors, function(key, value) {												// could be delete if we let the longpolling go throug the created things
-		if(value.type == 'dimmer') {
-			addDimmer(value.name,'Licht',value.sendActor,value.room,value.state,value.dimmValue);
-		}else if(value.type == 'light') {
-			addLight(value.name,'Licht',value.sendActor,value.room,value.state);
-		}else if(value.type == 'shutter') {
-			addShutter(value.name,'Rolladen',value.sendActor,value.room,value.state);
-		}else if(value.type == 'switch') {
-			addSwitch(value.name,'Schalter',value.sendActor,value.room,value.state);
-		}else if(value.type == 'thermostate') {
-			addThermostate(value.name,'Thermostat',value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
+		if(value.webType == 'dimmer') {
+			addDimmer(value.name,value.protocol,'Licht',value.sendActor,value.room,value.state,value.dimmValue);
+		}else if(value.webType == 'light') {
+			addLight(value.name,value.protocol,'Licht',value.sendActor,value.room,value.state);
+		}else if(value.webType == 'shutter') {
+			addShutter(value.name,value.protocol,'Rolladen',value.sendActor,value.room,value.state);
+		}else if(value.webType == 'switch') {
+			addSwitch(value.name,value.protocol,'Schalter',value.sendActor,value.room,value.state);
+		}else if(value.webType == 'thermostate') {
+			addThermostate(value.name,value.protocol,'Thermostat',value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
 }
 
-$(".room").live("click", function() {											// fixing not activating menu buttons
-	$(".room").removeClass("ui-btn-active");
-	$("."+this.id).addClass("ui-btn-active");
-});
-
-function longPoll() {															// the longpoll request
-	var room = new Array();
-	var actors = new Array();
-	ajaxCall({ XHR: 1, inform: 'console' },'',true).success(function(data) {	// the request itself
-		var response = data.split("\n");										// we dont want the newline at the end
-		$.each(response, function(key, value) {
-			if(value != '' && value.search(/schalter/i) == -1) {				// we dont want the changes of buttons have to make an cookie for that later
-				result = value.replace(/<br>$/,'').split(' ');					// delete the break at the end and split the string into an array
-				
-				$.each(window.actors, function(key, value) {
-					if(value.name == result[3]) {													// checking the type of the actor by going through all items in the actors 			
-						window[result[2] + '_get'](value.type,result[3],result[4],result[5]);		// array wich is created by the init() function
-					}
-				});
-				
-			}
-		});
-		longPoll();																// this ajax request has ended so we should start a new one
-	});
-}
-
-function longPollOld() {														// old version of the longpolling leading in way to many requests and mess up everything
-	var rooms = new Array();													// will be deleted after i finished the shiney new longPoll() function completely
-	actors = new Array();
-	ajaxCall({ room: 'all', inform: 1, XHR: 1 },'',true).success(function(data) {
-		// catches any changes of FHEM devices
-		var response = data.split("\n");
-		$.each(response, function(key, value) {
-			// dont do anything if actor state isnt changed
-			if(value != '' && value.search(/schalter/i) == -1) {
-				ajaxCall({ cmd: 'jsonlist', XHR: 1 },'json',false).success(function(data) {
-					$.each(data.Results, function(one, two) {
-						$.each(two, function(three, four) {
-							$.each(four, function(five, six) {
-								if(six.ATTR && six.ATTR.webType) {
-									if(jQuery.inArray(six.ATTR.room,rooms) == -1) { rooms.push(six.ATTR.room); }
-										$.each(six.READINGS, function(seven, eight) {
-											if(eight.state) { state = eight.state; }
-											if(eight.dimmValue) { value = eight.dimmValue; }
-										});
-										actors.push({"type": six.ATTR.webType, "name": six.NAME, "room": six.ATTR.room, "state": state, "value": value});
-								}
-							});
-						});
-					});
-					$.each(actors, function(key, value) {
-						// do this if actor has webType dimmer
-						if(value.type == 'dimmer') {
-							if($('#'+value.name+'flip').val() != value.state) {
-								$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
-							} else {
-								if($('#'+value.name+'val').val() != value.value && value.state == 'on') {
-									$('#'+value.name+'val').val(value.value).slider().slider("refresh");
-								}
-							}
-							if(value.state != 'on') {
-								$('#'+value.name+'val').val(0).slider().slider("refresh");
-							}
-						// do this if actor has webType light
-						} else if(value.type == 'light') {
-							$('#'+value.name+'flip').val(value.state).slider().slider("refresh");
-						// do this if actor has webType shutter
-						} else if(value.type == 'shutter') {
-//							$("input[name='"+value.name+"']:"+value.state).attr("checked",true).checkboxradio("refresh");
-							$('#'+value.name+value.state).attr('checked',true);
-							$('input[name='+value.name+']').checkboxradio().checkboxradio('refresh');
-//							$('#'+value.name).attr('checked',true).checkboxradio("refresh");
-						// do this if actor has webType switch
-						} else if(value.type == 'switch') {
-							
-						}							
-					});	
-				});	
-			}
-		});
-		longPoll();
-	});
-}	
+function xhrUpdate() {															// this is called on xhr.onreadystatechange
+	response = xhrLong.responseText.split("\n");		
 	
-$(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	ajaxCall({ cmd: 'set '+this.getAttribute("data-send-actor")+' dimm '+this.value+' 10', XHR: 1 },'',true);
-	console.log('SENDING: set '+this.getAttribute("data-send-actor")+' dimm '+this.value+' 10');		// some logging
+	//console.log(response.length);
+	
+	while ( count <= response.length ) {
+		if(response[count-2]) {
+			result = response[count-2].replace(/<br>$/,'').split(' ');
+//			console.log(result[2]+' '+result[3]+' '+result[4]+' '+result[5]);
+			$.each(window.actors, function(key, value) {										// make shure that we only react to displayed things
+				if(value.name == result[3]) {													// checking the type of the actor by going through all items in the actors 			
+					window[result[2] + '_get'](value.webType,result[3],result[4],result[5]);		// array wich is created by the init() function
+				}
+			});
+		}
+		count++;
+	}
+	
+	//console.log(xhrLong.responseText);
+	return;
+}
+	
+function longPoll() {															// the longpolling request
+	xhrLong = new XMLHttpRequest();
+	xhrLong.open('GET', 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem?XHR=1&inform=console', true);
+	xhrLong.onreadystatechange = xhrUpdate;
+	if($.cookie('serverUsername') != '') {
+		xhrLong.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode('tigi:asura:x') );
+	}
+	xhrLong.send(null);
+	return;
+}	
+
+$(".dimmerval").live("slidestop" , function() {									// sending user input to FHEM 
+	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
 $(".dimmerflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	if($(this).val() == 'on') {
-		ajaxCall({ cmd: 'set '+this.getAttribute("data-send-actor")+' dimm 100 10', XHR: 1 },'',true);
-		console.log('SENDING: set '+this.getAttribute("data-send-actor")+' dimm 100 10');		// some logging
-	} else {
-		ajaxCall({ cmd: 'set '+this.getAttribute("data-send-actor")+' dimm 0 10', XHR: 1 },'',true);
-		console.log('SENDING: set '+this.getAttribute("data-send-actor")+' dimm 0 10');			// some logging
-	}
+	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
 $(".lightflip").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	ajaxCall({ cmd: 'trigger nForTimer '+this.getAttribute("data-send-actor")+' on 0.1 released', XHR: 1 },'',true);
-	console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' on 0.1 released');		// some logging
+	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
 $('.thermostateval').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	if(timeout) {																// restart timeout loop if we have one allready running
-        clearTimeout(timeout);
-        timeout = null;
-    }
-	var actor = this.getAttribute("data-send-actor");
-	timeout = setTimeout(function(){
-		ajaxCall({ cmd: 'set '+actor+' desiredTemperature '+$('#'+actor+'val').val(), XHR: 1 },'',true);
-		console.log('SENDING: set '+actor+' desiredTemperature '+$('#'+actor+'val').val());		// some logging
-	}, 2000);																	// wait 2000 ms for another action
-	if(this.id == this.name+'up') {
-		$('#'+this.name).val(Number($('#'+this.name).val())+0.5);				// the steps should maybe be an option in settings or better in fhem.cfg
-	} else {
-		$('#'+this.name).val(Number($('#'+this.name).val())-0.5);
-	}
+	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$('.shutterval').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	if(this.id == this.getAttribute("data-actor")+'up') {
-		ajaxCall({ cmd: 'trigger nForTimer '+this.getAttribute("data-send-actor")+' up 0.1 released', XHR: 1 },'',true);
-		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' up 0.1 released');
-	} else if(this.id == this.getAttribute("data-actor")+'stop') {
-		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' stop 0.1 released');
-	} else if(this.id == this.getAttribute("data-actor")+'down') {
-		ajaxCall({ cmd: 'trigger nForTimer '+this.getAttribute("data-send-actor")+' down 0.1 released', XHR: 1 },'',true);
-		console.log('SENDING: trigger nForTimer '+this.getAttribute("data-send-actor")+' down 0.1 released');
-	} 
+$('.shutterval').live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
 $("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
