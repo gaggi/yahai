@@ -55,7 +55,7 @@ function addLight(id,protocol,name,sendActor,room,state) {											// adding t
 			'<option value="on" '+selecton+'>An</option>'+
 		'</select>'+
 	'</div>');
-}
+};
 	
 function addShutter(id,protocol,name,sendActor,room,state) {										// adding the controls for a shutter to the interface
 	if(state == 'up') {
@@ -74,7 +74,7 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="button '+id+' '+activeup+'">up</a>'+
 		'</fieldset>'+
 	'</div>');
-}
+};
 	
 function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
 	$("#primary"+room).append(	
@@ -89,7 +89,7 @@ function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp)
 
 function addSwitch() {
 
-}
+};
 
 function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
 	if($.cookie('serverUsername') != '') {
@@ -115,7 +115,7 @@ function ajaxCall(data,type,async) {											// handles all the ajax requests 
 			cache: false
 		});
 	}
-}
+};
 	
 function init() {																// initial sequence executed after the page is loaded calling other functions
 	var rooms = new Array();
@@ -203,7 +203,7 @@ function init() {																// initial sequence executed after the page is 
 			addThermostate(value.name,value.protocol,'Thermostat',value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
-}
+};
 
 function xhrUpdate() {															// this is called on xhr.onreadystatechange
 	response = xhrLong.responseText.split("\n");		
@@ -225,7 +225,7 @@ function xhrUpdate() {															// this is called on xhr.onreadystatechange
 	
 	//console.log(xhrLong.responseText);
 	return;
-}
+};
 	
 function longPoll() {															// the longpolling request
 	xhrLong = new XMLHttpRequest();
@@ -236,7 +236,7 @@ function longPoll() {															// the longpolling request
 	}
 	xhrLong.send(null);
 	return;
-}	
+};
 
 $(".slider").live("slidestop" , function() {									// sending user input to FHEM 
 	window[this.getAttribute("data-protocol") + '_send'](this);
