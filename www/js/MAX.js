@@ -1,5 +1,5 @@
 function MAX_get(webType,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
-	console.log('RECEIVING: MAX! '+type+' '+name+' '+data1+' '+data2);
+	console.log('RECEIVING: MAX! '+webType+' '+name+' '+data1+' '+data2);
 	if(type == 'thermostate') {													// Max Thermostat
 		if(data1 == "desiredTemperature:") {
 			$('#'+name+'val').val(data2);
