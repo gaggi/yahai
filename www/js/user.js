@@ -5,67 +5,13 @@
 //This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-$.getScript("./js/EnOcean.js", function() {});										// contains EnOcean_get and _send function
-$.getScript("./js/MAX.js", function() {});											// contains MAX_get and _send function
+$.getScript("./js/EnOcean.js");										// contains EnOcean_get and _send function
+$.getScript("./js/MAX.js");											// contains MAX_get and _send function
 
 jQuery.support.cors = true;
 	
 var data1, data2, timeout, result, count = 0;
 var actors = new Array();
-	if(name.getAttribute("data-web-type") == 'dimmer') {
-		if(name.value == 'on') {
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 100 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 100 10');		// some logging
-		} else if(name.value == 'off') {
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 0 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 0 10');			// some logging
-		} else {
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10');								// some logging
-		}
-	} else if(name.getAttribute("data-web-type") == 'light') {
-		ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released', XHR: 1 },'',true);
-		console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released');		// some logging
-	} else if(name.getAttribute("data-web-type") == 'shutter') {
-		if(name.id == name.getAttribute("data-actor")+'up') {
-			ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' up 0.1 released', XHR: 1 },'',true);
-			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' up 0.1 released');
-		} else if(name.id == name.getAttribute("data-actor")+'stop') {
-			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' stop 0.1 released');
-		} else if(name.id == name.getAttribute("data-actor")+'down') {
-			ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' down 0.1 released', XHR: 1 },'',true);
-			console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' down 0.1 released');
-		} 
-	} 
-};
-
-function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
-	console.log('RECEIVING: MAX! '+type+' '+name+' '+data1+' '+data2);
-	if(type == 'thermostate') {													// Max Thermostat
-		if(data1 == "desiredTemperature:") {
-			$('#'+name+'val').val(data2);
-		}			
-	}
-};
-
-function MAX_send(name) {															// placeholder for sending EnOcean status changes 
-	if(name.getAttribute("data-web-type") == 'thermostate') {
-		if(timeout) {																// restart timeout loop if we have one allready running
-			clearTimeout(timeout);
-			timeout = null;
-		}
-		timeout = setTimeout(function(){
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' desiredTemperature '+$('#'+name.getAttribute("data-send-actor")+'val').val(), XHR: 1 },'',true),
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' desiredTemperature '+$('#'+name.getAttribute("data-send-actor")+'val').val());		// some logging
-		}, 2000);																	// wait 2000 ms for another action
-
-		if(name.id == name.name+'up') {
-			$('#'+name.name).val(Number($('#'+name.name).val())+0.5);				// the steps should maybe be an option in settings or better in fhem.cfg
-		} else {
-			$('#'+name.name).val(Number($('#'+name.name).val())-0.5);
-		}
-	}
-};
 	
 function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {									// adding the controls for a dimmer to the interface
 	var selecton = '';
@@ -91,7 +37,7 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {									//
 			'</select>'+
 			'<a href="#popup'+id+'" data-rel="popup" data-role="button" data-inline="true" style="margin-top: -10px">Dimmen</a>'+
 		'</div>');
-}
+};
 	
 function addLight(id,protocol,name,sendActor,room,state) {											// adding the controls for a light to the interface
 	var selecton = '';
