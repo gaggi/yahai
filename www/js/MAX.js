@@ -1,4 +1,4 @@
-function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
+function MAX_get(webType,name,data1,data2) {										// parsing the EQ.3 MAX! messages recieved via longPoll request
 	console.log('RECEIVING: MAX! '+type+' '+name+' '+data1+' '+data2);
 	if(type == 'thermostate') {													// Max Thermostat
 		if(data1 == "desiredTemperature:") {
@@ -7,7 +7,7 @@ function MAX_get(type,name,data1,data2) {										// parsing the EQ.3 MAX! mess
 	}
 };
 
-function MAX_send(name) {															// placeholder for sending EnOcean status changes 
+function MAX_send(name) {															// sending MAX status changes
 	if(name.getAttribute("data-web-type") == 'thermostate') {
 		if(timeout) {																// restart timeout loop if we have one allready running
 			clearTimeout(timeout);
