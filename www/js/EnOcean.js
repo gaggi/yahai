@@ -23,14 +23,14 @@ function EnOcean_get(webType,name,data1,data2) { 									// Parsing the EnOcean
 function EnOcean_send(name) {														// sending EnOcean status changes 
 	if(name.getAttribute("data-web-type") == 'dimmer') {
 		if(name.value == 'on') {							
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 100 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 100 10');											// some logging
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dim 100 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dim 100 10');											// some logging
 		} else if(name.value == 'off') {
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm 0 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm 0 10');												// some logging
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dim 0 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dim 0 10');												// some logging
 		} else {
-			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10', XHR: 1 },'',true);
-			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dimm '+name.value+' 10');								// some logging
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' dim '+name.value+' 10', XHR: 1 },'',true);
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dim '+name.value+' 10');								// some logging
 		}
 	} else if(name.getAttribute("data-web-type") == 'light') {
 		ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released', XHR: 1 },'',true);

@@ -13,7 +13,7 @@ jQuery.support.cors = true;
 var data1, data2, timeout, result, count = 0;
 var actors = new Array();
 	
-function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {									// adding the controls for a dimmer to the interface
+function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// adding the controls for a dimmer to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -133,9 +133,8 @@ function init() {																// initial sequence executed after the page is 
 					if(six.ATTR && six.ATTR.webType) {
 						if(jQuery.inArray(six.ATTR.room,rooms) == -1) { rooms.push(six.ATTR.room); }
 							$.each(six.READINGS, function(seven, eight) {								// get the READINGS part of the device
-								if(eight.state) { state = eight.state; }								// for enocean dimmers
 								if(eight.dimmValue) { value = eight.dimmValue; }
-								if(eight.desiredTemperature) { settemp = eight.desiredTemperature; }		// for max thermostates
+								if(eight.desiredTemperature) { settemp = eight.desiredTemperature; }	// for max thermostates
 								if(eight.valveposition) { valvepos = eight.valveposition; }
 								if(eight.temperature) { temp = eight.temperature; }						// deactivated because not displayed at the moment
 							});
@@ -145,15 +144,15 @@ function init() {																// initial sequence executed after the page is 
 							} else {
 								sendActor = six.NAME;													// if not choose the actor itself as sendActor
 							}
-							
+
 							if(six.ATTR.webType == "light") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "dimmer") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state, "dimmValue": value});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
 							} else if(six.ATTR.webType == "shutter") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "switch") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": state});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "thermostate") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
 							}
@@ -242,11 +241,11 @@ $(".slider").live("slidestop" , function() {									// sending user input to FH
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$(".switch").live("change" , function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$(".switch").live("change" , function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$('.button').live("click", function() {									// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$('.button').live("click", function() {											// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
