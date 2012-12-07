@@ -6,6 +6,7 @@
 //You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 $.getScript("./js/EnOcean.js");										// contains EnOcean_get and _send function
+$.getScript("./js/FS20.js");										// contains FS20_get and _send function
 $.getScript("./js/MAX.js");											// contains MAX_get and _send function
 
 jQuery.support.cors = true;
@@ -38,25 +39,7 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// 
 			'<a href="#popup'+id+'" data-rel="popup" data-role="button" data-inline="true" style="margin-top: -10px">Dimmen</a>'+
 		'</div>');
 };
-	
-function addLight(id,protocol,name,sendActor,room,state) {											// adding the controls for a light to the interface
-	var selecton = '';
-	var selectoff = '';
-	if(state == 'on') {
-		var selecton = 'selected';
-	} else {
-		var selectoff = 'selected';
-	}
-	$("#primary"+room).append(
-	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
-		'<select data-protocol="'+protocol+'" data-web-type="light" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
-			'<option value="off" '+selectoff+'>Aus</option>'+
-			'<option value="on" '+selecton+'>An</option>'+
-		'</select>'+
-	'</div>');
-};
-	
+		
 function addShutter(id,protocol,name,sendActor,room,state) {										// adding the controls for a shutter to the interface
 	if(state == 'up') {
 		var activeup = 'ui-btn-active';
@@ -87,8 +70,22 @@ function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp)
 
 }
 
-function addSwitch() {
-
+function addSwitch(id,protocol,name,sendActor,room,state) {
+	var selecton = '';
+	var selectoff = '';
+	if(state == 'on') {
+		var selecton = 'selected';
+	} else {
+		var selectoff = 'selected';
+	}
+	$("#primary"+room).append(
+	'<div data-role="fieldcontain">'+
+		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
+		'<select data-protocol="'+protocol+'" data-web-type="switch" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
+			'<option value="off" '+selectoff+'>Aus</option>'+
+			'<option value="on" '+selecton+'>An</option>'+
+		'</select>'+
+	'</div>');
 };
 
 function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
@@ -145,9 +142,7 @@ function init() {																// initial sequence executed after the page is 
 								sendActor = six.NAME;													// if not choose the actor itself as sendActor
 							}
 
-							if(six.ATTR.webType == "light") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
-							} else if(six.ATTR.webType == "dimmer") {
+							if(six.ATTR.webType == "dimmer") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
 							} else if(six.ATTR.webType == "shutter") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
@@ -192,8 +187,6 @@ function init() {																// initial sequence executed after the page is 
 	$.each(actors, function(key, value) {												// could be delete if we let the longpolling go throug the created things
 		if(value.webType == 'dimmer') {
 			addDimmer(value.name,value.protocol,'Licht',value.sendActor,value.room,value.state,value.dimmValue);
-		}else if(value.webType == 'light') {
-			addLight(value.name,value.protocol,'Licht',value.sendActor,value.room,value.state);
 		}else if(value.webType == 'shutter') {
 			addShutter(value.name,value.protocol,'Rolladen',value.sendActor,value.room,value.state);
 		}else if(value.webType == 'switch') {
