@@ -92,13 +92,13 @@ function ajaxCall(data,type,async) {											// handles all the ajax requests 
 	if($.cookie('serverUsername') != '') {
 		return $.ajax({
 			type: 'GET',
-			url: 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+			url: 'http://'+localStorage.getItem('serverAddress')+':'+localStorage.getItem('serverPort')+'/fhem',
 			data: data,
 			dataType: type,
 			async: async,
 			crossDomain: true,
 			xhrFields: { withCredentials: true },
-			headers: { 'Authorization': 'Basic '+$.base64.encode($.cookie('serverUsername')+':'+$.cookie('serverPassword')+':x') },
+			headers: { 'Authorization': 'Basic '+$.base64.encode(localStorage.getItem('serverUsername')+':'+localStorage.getItem('serverPassword')+':x') },
 			cache: false
 		});
 	} else {
@@ -117,11 +117,10 @@ function ajaxCall(data,type,async) {											// handles all the ajax requests 
 function init() {																// initial sequence executed after the page is loaded calling other functions
 	var rooms = new Array();
 	
-	$('#serverAddress').val($.cookie('serverAddress'));
-	$('#serverPort').val($.cookie('serverPort'));
-	$('#serverUsername').val($.cookie('serverUsername'));
-	$('#serverPassword').val($.cookie('serverPassword'));
-	$('#serverPrefix').val($.cookie('serverPrefix'));
+	$('#serverAddress').val(localStorage.getItem('serverAddress'));
+	$('#serverPort').val(localStorage.getItem('serverPort'));
+	$('#serverUsername').val(localStorage.getItem('serverUsername'));
+	$('#serverPassword').val(localStorage.getItem('serverPassword'));
 		
 	ajaxCall({ cmd: 'jsonlist', XHR: 1 },'json',false).success(function(data) {
 		$.each(data.Results, function(one, two) {
@@ -221,7 +220,7 @@ function xhrUpdate() {															// this is called on xhr.onreadystatechange
 	
 function longPoll() {															// the longpolling request
 	xhrLong = new XMLHttpRequest();
-	xhrLong.open('GET', 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem?XHR=1&inform=console', true);
+	xhrLong.open('GET', 'http://'+localStorage.getItem('serverAddress')+':'+localStorage.getItem('serverPort')+'/fhem?XHR=1&inform=console', true);
 	xhrLong.onreadystatechange = xhrUpdate;
 	if($.cookie('serverUsername') != '') {
 		xhrLong.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode('tigi:asura:x') );
@@ -266,9 +265,8 @@ $("#serverTest").live("click", function() {										// sending user input to FH
 });	
 
 $("#saveConfig").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	$.cookie('serverAddress', $('#serverAddress').val(), { expires: 9999 });
-	$.cookie('serverPort', $('#serverPort').val(), { expires: 9999 });
-	$.cookie('serverUsername', $('#serverUsername').val(), { expires: 9999 });
-	$.cookie('serverPassword', $('#serverPassword').val(), { expires: 9999 });
-	$.cookie('serverPrefix', $('#serverPrefix').val(), { expires: 9999 });
+	localStorage.setItem('serverAddress', $('#serverAddress').val());
+	localStorage.setItem('serverPort', $('#serverPort').val());
+	localStorage.setItem('serverUsername', $('#serverUsername').val());
+	localStorage.setItem('serverPassword', $('#serverPassword').val());
 });
