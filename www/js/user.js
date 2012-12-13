@@ -15,7 +15,7 @@ jQuery.support.cors = true;
 var data1, data2, timeout, result, count = 0;
 var actors = new Array();
 	
-function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// adding the controls for a dimmer to the interface
+function addDimmer(id,protocol,name,alias,sendActor,room,state,dimmValue) {								// adding the controls for a dimmer to the interface
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -32,7 +32,7 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// 
 			'<input type="range" data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="slider" style="margin-left:5px;" />'+
 		'</div>'+
 		'<div data-role="fieldcontain">'+
-			'<label for="'+id+'flip"><h5>'+name+'</h5></label>'+
+			'<label for="'+id+'flip"><h5>'+alias+'</h5></label>'+
 			'<select data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 				'<option value="off" '+selectoff+'>Aus</option>'+
 				'<option value="on" '+selecton+'>An</option>'+
@@ -41,7 +41,7 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// 
 		'</div>');
 };
 		
-function addShutter(id,protocol,name,sendActor,room,state) {										// adding the controls for a shutter to the interface
+function addShutter(id,protocol,name,alias,sendActor,room,state) {										// adding the controls for a shutter to the interface
 	if(state == 'up') {
 		var activeup = 'ui-btn-active';
 	} else if(state == 'down') {
@@ -52,7 +52,7 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<fieldset data-role="controlgroup" data-type="horizontal">'+
-			'<legend><h5>'+name+'</h5></legend>'+
+			'<legend><h5>'+alias+'</h5></legend>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="button '+id+' '+activedown+'">down</a>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="button '+id+' '+activestop+'">stop</a>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="button '+id+' '+activeup+'">up</a>'+
@@ -60,10 +60,10 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 	'</div>');
 };
 	
-function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
+function addThermostate(id,protocol,name,alias,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
 	$("#primary"+room).append(	
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'val"><h5>'+name+'</h5></label>'+
+		'<label for="'+id+'val"><h5>'+alias+'</h5></label>'+
 		'<input data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" type="text" data-mintemp="'+minTemp+'" data-maxtemp="'+maxTemp+'" id="'+id+'val" value="'+setTemp+'" style="width: 50px;margin-right:10px;" />'+
 		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="button">down</a>'+
 		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="button">up</a>'+
@@ -71,7 +71,7 @@ function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp)
 
 }
 
-function addSwitch(id,protocol,name,sendActor,room,state) {
+function addSwitch(id,protocol,name,alias,sendActor,room,state) {
 	var selecton = '';
 	var selectoff = '';
 	if(state == 'on') {
@@ -81,7 +81,7 @@ function addSwitch(id,protocol,name,sendActor,room,state) {
 	}
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'flip"><h5>'+name+'</h5></label>'+
+		'<label for="'+id+'flip"><h5>'+alias+'</h5></label>'+
 		'<select data-protocol="'+protocol+'" data-web-type="switch" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 			'<option value="off" '+selectoff+'>Aus</option>'+
 			'<option value="on" '+selecton+'>An</option>'+
@@ -90,7 +90,7 @@ function addSwitch(id,protocol,name,sendActor,room,state) {
 };
 
 function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
-	if($.cookie('serverUsername') != '') {
+	if(localStorage.getItem('serverPassword') != '') {
 		return $.ajax({
 			type: 'GET',
 			url: 'http://'+localStorage.getItem('serverAddress')+':'+localStorage.getItem('serverPort')+'/fhem',
@@ -105,7 +105,7 @@ function ajaxCall(data,type,async) {											// handles all the ajax requests 
 	} else {
 		return $.ajax({
 			type: 'GET',
-			url: 'http://'+$.cookie('serverAddress')+':'+$.cookie('serverPort')+'/fhem',
+			url: 'http://'+localStorage.getItem('serverAddress')+':'+localStorage.getItem('serverPort')+'/fhem',
 			data: data,
 			dataType: type,
 			async: async,
@@ -143,19 +143,19 @@ function init() {																// initial sequence executed after the page is 
 							}
 							
 							if(six.ATTR.alias) {
-								name = six.ATTR.alias;
+								alias = six.ATTR.alias;
 							} else {
-								name = six.NAME;
+								alias = six.NAME;
 							}
 
 							if(six.ATTR.webType == "dimmer") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
 							} else if(six.ATTR.webType == "shutter") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "switch") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "thermostate") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
 							}
 					}
 				});
@@ -192,13 +192,13 @@ function init() {																// initial sequence executed after the page is 
 	
 	$.each(actors, function(key, value) {												// could be delete if we let the longpolling go throug the created things
 		if(value.webType == 'dimmer') {
-			addDimmer(value.name,value.protocol,value.name,value.sendActor,value.room,value.state,value.dimmValue);
+			addDimmer(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.state,value.dimmValue);
 		}else if(value.webType == 'shutter') {
-			addShutter(value.name,value.protocol,value.name,value.sendActor,value.room,value.state);
+			addShutter(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'switch') {
-			addSwitch(value.name,value.protocol,value.name,value.sendActor,value.room,value.state);
+			addSwitch(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'thermostate') {
-			addThermostate(value.name,value.protocol,value.name,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
+			addThermostate(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
 };
@@ -213,7 +213,8 @@ function xhrUpdate() {															// this is called on xhr.onreadystatechange
 			result = response[count-2].replace(/<br>$/,'').split(' ');
 //			console.log(result[2]+' '+result[3]+' '+result[4]+' '+result[5]);
 			$.each(window.actors, function(key, value) {										// make shure that we only react to displayed things
-				if(value.name == result[3]) {													// checking the type of the actor by going through all items in the actors 			
+				if(value.name == result[3]) {													// checking the type of the actor by going through all items in the actors 	
+//					console.log(result[2]+' '+value.webType+' '+result[3]+' '+result[4]+' '+result[5]);
 					window[result[2] + '_get'](value.webType,result[3],result[4],result[5]);		// array wich is created by the init() function
 				}
 			});
@@ -229,8 +230,8 @@ function longPoll() {															// the longpolling request
 	xhrLong = new XMLHttpRequest();
 	xhrLong.open('GET', 'http://'+localStorage.getItem('serverAddress')+':'+localStorage.getItem('serverPort')+'/fhem?XHR=1&inform=console', true);
 	xhrLong.onreadystatechange = xhrUpdate;
-	if($.cookie('serverUsername') != '') {
-		xhrLong.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode('tigi:asura:x') );
+	if(localStorage.getItem('serverPassword') != '') {
+		xhrLong.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode(localStorage.getItem('serverUsername')+':'+localStorage.getItem('serverPassword')+':x') );
 	}
 	xhrLong.send(null);
 	return;
@@ -249,27 +250,21 @@ $('.button').live("click", function() {											// sending user input to FHEM 
 });
 
 $("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
-	$.ajax({
-		type: 'GET',
-		url: 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem',
-		data: { cmd: 'jsonlist', XHR: 1 },
-		dataType: 'json',
-		async: false,
-		crossDomain: true,
-		xhrFields: { withCredentials: true },
-		headers: { 'Authorization': 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') },
-		cache: false,
-
-		success: function(data){
+	xhrTest = new XMLHttpRequest();
+	xhrTest.open('GET', 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem?XHR=1&cmd=jsonlist', true);
+	xhrTest.onreadystatechange = function () {
+		if (xhrTest.status === 200) {
 			$('#serverTestLog').html('<h3><span style="color: green">Erfolg</span></h3>');
-		},
-		
-		error: function(XMLHttpRequest, textStatus, errorThrown){
-			$('#serverTestLog').html('<h3><span style="color: red">Fehler</h3></span><p>'+errorThrown+'</p>');
+		} else {
+			$('#serverTestLog').html('<h3><span style="color: red">Fehler '+xhrTest.status+'</span></h3><p>'+xhrTest.statusText+'</p>');
 		}
-	
-	});
-});	
+	}
+	if($('#serverPassword').val() != '') {
+		xhrTest.withCredentials = true;
+		xhrTest.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') );
+	}
+	xhrTest.send(null);
+});
 
 $("#saveConfig").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	localStorage.setItem('serverAddress', $('#serverAddress').val());
