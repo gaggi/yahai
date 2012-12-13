@@ -17,4 +17,4 @@ function IT_send(name) {														// sending Intertechno status changes
 	}; 
 };
 
-console.log("Module FS20.js successfully loaded");
+console.log("Module IT.js successfully loaded");

@@ -32,7 +32,7 @@ function addDimmer(id,protocol,name,sendActor,room,state,dimmValue) {								// 
 			'<input type="range" data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'val" value="'+dimmValue+'" min="0" max="100" data-highlight="true" class="slider" style="margin-left:5px;" />'+
 		'</div>'+
 		'<div data-role="fieldcontain">'+
-			'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
+			'<label for="'+id+'flip"><h5>'+name+'</h5></label>'+
 			'<select data-protocol="'+protocol+'" data-web-type="dimmer" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 				'<option value="off" '+selectoff+'>Aus</option>'+
 				'<option value="on" '+selecton+'>An</option>'+
@@ -52,7 +52,7 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<fieldset data-role="controlgroup" data-type="horizontal">'+
-			'<legend><h5>Rolladen:</h5></legend>'+
+			'<legend><h5>'+name+'</h5></legend>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'down" data-role="button" data-icon="arrow-d" data-iconpos="notext" class="button '+id+' '+activedown+'">down</a>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'stop" data-role="button" data-icon="delete" data-iconpos="notext" class="button '+id+' '+activestop+'">stop</a>'+
 			'<a href="#" data-protocol="'+protocol+'" data-web-type="shutter" data-actor="'+id+'" data-send-actor="'+sendActor+'" id="'+id+'up" data-role="button" data-icon="arrow-u" data-iconpos="notext" class="button '+id+' '+activeup+'">up</a>'+
@@ -63,7 +63,7 @@ function addShutter(id,protocol,name,sendActor,room,state) {										// adding 
 function addThermostate(id,protocol,name,sendActor,room,setTemp,minTemp,maxTemp) {					// adding the controls for a thermostate to the interface
 	$("#primary"+room).append(	
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'val"><h5>Thermostat:</h5></label>'+
+		'<label for="'+id+'val"><h5>'+name+'</h5></label>'+
 		'<input data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" type="text" data-mintemp="'+minTemp+'" data-maxtemp="'+maxTemp+'" id="'+id+'val" value="'+setTemp+'" style="width: 50px;margin-right:10px;" />'+
 		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valdown" class="button">down</a>'+
 		'<a href="#" data-protocol="'+protocol+'" data-web-type="thermostate" data-actor="'+id+'" data-send-actor="'+sendActor+'" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-inline="true" name="'+id+'val" id="'+id+'valup" class="button">up</a>'+
@@ -81,7 +81,7 @@ function addSwitch(id,protocol,name,sendActor,room,state) {
 	}
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'flip"><h5>'+name+':</h5></label>'+
+		'<label for="'+id+'flip"><h5>'+name+'</h5></label>'+
 		'<select data-protocol="'+protocol+'" data-web-type="switch" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'flip" class="switch" data-role="slider">'+
 			'<option value="off" '+selectoff+'>Aus</option>'+
 			'<option value="on" '+selecton+'>An</option>'+
@@ -141,15 +141,21 @@ function init() {																// initial sequence executed after the page is 
 							} else {
 								sendActor = six.NAME;													// if not choose the actor itself as sendActor
 							}
+							
+							if(six.ATTR.alias) {
+								name = six.ATTR.alias;
+							} else {
+								name = six.NAME;
+							}
 
 							if(six.ATTR.webType == "dimmer") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
 							} else if(six.ATTR.webType == "shutter") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "switch") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "thermostate") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": name, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
 							}
 					}
 				});
@@ -186,13 +192,13 @@ function init() {																// initial sequence executed after the page is 
 	
 	$.each(actors, function(key, value) {												// could be delete if we let the longpolling go throug the created things
 		if(value.webType == 'dimmer') {
-			addDimmer(value.name,value.protocol,'Licht',value.sendActor,value.room,value.state,value.dimmValue);
+			addDimmer(value.name,value.protocol,value.name,value.sendActor,value.room,value.state,value.dimmValue);
 		}else if(value.webType == 'shutter') {
-			addShutter(value.name,value.protocol,'Rolladen',value.sendActor,value.room,value.state);
+			addShutter(value.name,value.protocol,value.name,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'switch') {
-			addSwitch(value.name,value.protocol,'Schalter',value.sendActor,value.room,value.state);
+			addSwitch(value.name,value.protocol,value.name,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'thermostate') {
-			addThermostate(value.name,value.protocol,'Thermostat',value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
+			addThermostate(value.name,value.protocol,value.name,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
 };
