@@ -261,7 +261,8 @@ $("#serverTest").live("click", function() {										// sending user input to FH
 	}
 	if($('#serverPassword').val() != '') {
 		xhrTest.withCredentials = true;
-		xhrTest.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') );
+		xhrTest.setRequestHeader( 'Authorization', 'Basic dGlnaTphc3VyYTp4');
+//		xhrTest.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') );
 	}
 	xhrTest.send(null);
 });
