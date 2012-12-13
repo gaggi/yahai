@@ -261,7 +261,6 @@ $("#serverTest").live("click", function() {										// sending user input to FH
 	}
 	if($('#serverPassword').val() != '') {
 		xhrTest.withCredentials = true;
-		xhrTest.setRequestHeader( 'Origin', 'http://192.168.178.2');
 		xhrTest.setRequestHeader( 'Authorization', 'Basic '+$.base64.encode($('#serverUsername').val()+':'+$('#serverPassword').val()+':x') );
 	}
 	xhrTest.send(null);
