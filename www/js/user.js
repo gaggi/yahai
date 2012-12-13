@@ -5,9 +5,10 @@
 //This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-$.getScript("./js/EnOcean.js");										// contains EnOcean_get and _send function
-$.getScript("./js/FS20.js");										// contains FS20_get and _send function
-$.getScript("./js/MAX.js");											// contains MAX_get and _send function
+$.getScript("./js/EnOcean.js");										// contains EnOcean_get and _send functions
+$.getScript("./js/FS20.js");										// contains FS20_get and _send functions
+$.getScript("./js/MAX.js");											// contains MAX_get and _send functions
+$.getScript("./js/IT.js");											// contains IT_get and _send functions
 
 jQuery.support.cors = true;
 	
