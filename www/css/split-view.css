@@ -47,8 +47,8 @@ p.intro strong {
 	color:  #558e08;
 }
 .footer-test {
-	visibility: hidden;
-	padding: 5px 0;
+	visibility: visible;
+
 }
 .footer-test p {
 	margin-left:15px;
