@@ -93,7 +93,7 @@ function addButton(id,protocol,name,alias,sendActor,room,state) {
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'flip"><h5>'+alias+'</h5></label>'+
-		'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-role="button" data-inline="true" class="testbutton">Toggle</a>'+
+		'<input type="button" value="Toggle" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-inline="true" class="testbutton" />'+
 		'<div id="ausgabediv">nichts</div>'+
 	'</div>');
 };
