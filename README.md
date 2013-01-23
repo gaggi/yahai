@@ -21,8 +21,8 @@ have to specify the webType you want like
 
 	attr your_device webType switch
 
-Valid values for webType at the moment are thermostate,dimmer,
-shutter and switch.
+Valid values for webType at the moment are thermostate, dimmer,
+shutter, switch and button.
 
 After that you have to set the address of your pgm2 and its
 port inside of yaHAi. 

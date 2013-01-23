@@ -89,6 +89,15 @@ function addSwitch(id,protocol,name,alias,sendActor,room,state) {
 	'</div>');
 };
 
+function addButton(id,protocol,name,alias,sendActor,room,state) {
+	$("#primary"+room).append(
+	'<div data-role="fieldcontain">'+
+		'<label for="'+id+'flip"><h5>'+alias+'</h5></label>'+
+		'<a href="#" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-role="button" data-inline="true" class="testbutton">Toggle</a>'+
+		'<div id="ausgabediv">nichts</div>'+
+	'</div>');
+};
+
 function ajaxCall(data,type,async) {											// handles all the ajax requests to FHEM
 	if(localStorage.getItem('serverPassword') != '') {
 		return $.ajax({
@@ -150,12 +159,12 @@ function init() {																// initial sequence executed after the page is 
 
 							if(six.ATTR.webType == "dimmer") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE, "dimmValue": value});
-							} else if(six.ATTR.webType == "shutter") {
-								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "switch") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "thermostate") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
+							} else if(six.ATTR.webType == "shutter" || six.ATTR.webType == "switch" || six.ATTR.webType == "button") {
+								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							}
 					}
 				});
@@ -199,6 +208,8 @@ function init() {																// initial sequence executed after the page is 
 			addSwitch(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'thermostate') {
 			addThermostate(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
+		}else if(value.webType == 'button') {
+			addButton(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
 };
@@ -247,6 +258,15 @@ $(".switch").live("change" , function() {										// sending user input to FHEM
 
 $('.button').live("click", function() {											// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
 	window[this.getAttribute("data-protocol") + '_send'](this);
+});
+
+$('.testbutton').live({
+  vmousedown: function() {
+    document.getElementById('ausgabediv').innerHTML = 'mousedown';
+  },
+  vmouseup: function() {
+    document.getElementById('ausgabediv').innerHTML = 'mouseup';
+  }
 });
 
 $("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
