@@ -20,7 +20,7 @@ function EnOcean_get(webType,name,data1,data2) { 									// Parsing the EnOcean
 	};
 };
 
-function EnOcean_send(name) {														// sending EnOcean status changes 
+function EnOcean_send(name,action) {												// sending EnOcean status changes 
 	if(name.getAttribute("data-web-type") == 'dimmer') {
 		if(name.value == 'on') {							
 			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' on', XHR: 1 },'',true);
@@ -46,6 +46,12 @@ function EnOcean_send(name) {														// sending EnOcean status changes
 			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' down', XHR: 1 },'',true);
 			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' down');						// some logging
 		} 
+	} else if(name.getAttribute("data-web-type") == 'button') {
+		if(action == 'down') {
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' on');		
+		} else {
+			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' released');
+		}
 	}; 
 };
 

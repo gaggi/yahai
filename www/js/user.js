@@ -89,11 +89,11 @@ function addSwitch(id,protocol,name,alias,sendActor,room,state) {
 	'</div>');
 };
 
-function addButton(id,protocol,name,alias,sendActor,room,state) {
+function addPushButton(id,protocol,name,alias,sendActor,room,state) {
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
-		'<label for="'+id+'flip"><h5>'+alias+'</h5></label>'+
-		'<input type="button" value="Toggle" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-inline="true" class="testbutton" />'+
+		'<label for="'+id+'button"><h5>'+alias+'</h5></label>'+
+		'<input type="button" value="Toggle" data-web-type="button" data-protocol="'+protocol+'" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-inline="true" class="pushbutton" />'+
 		'<div id="ausgabediv">nichts</div>'+
 	'</div>');
 };
@@ -163,7 +163,7 @@ function init() {																// initial sequence executed after the page is 
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							} else if(six.ATTR.webType == "thermostate") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "temp": temp, "setTemp": settemp, "valvePos": valvepos, "minTemp": six.minimumTemperature, "maxTemp": six.maximumTemperature, "ecoTemp": six.ecoTemperature, "comfortTemp": six.comfortTemperature});
-							} else if(six.ATTR.webType == "shutter" || six.ATTR.webType == "switch" || six.ATTR.webType == "button") {
+							} else if(six.ATTR.webType == "shutter" || six.ATTR.webType == "switch" || six.ATTR.webType == "pushbutton") {
 								actors.push({"protocol": six.TYPE, "webType": six.ATTR.webType, "name": six.NAME, "alias": alias, "sendActor": sendActor, "room": six.ATTR.room, "state": six.STATE});
 							}
 					}
@@ -208,8 +208,8 @@ function init() {																// initial sequence executed after the page is 
 			addSwitch(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.state);
 		}else if(value.webType == 'thermostate') {
 			addThermostate(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
-		}else if(value.webType == 'button') {
-			addButton(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
+		}else if(value.webType == 'pushbutton') {
+			addPushButton(value.name,value.protocol,value.name,value.alias,value.sendActor,value.room,value.setTemp,value.minTemp,value.maxTemp);
 		}
 	});
 };
@@ -252,24 +252,24 @@ $(".slider").live("slidestop" , function() {									// sending user input to FH
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$(".switch").live("change" , function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$(".switch").live("change" , function() {										// sending user input to FHEM 
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$('.button').live("click", function() {											// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$('.button').live("click", function() {											// sending user input to FHEM 
 	window[this.getAttribute("data-protocol") + '_send'](this);
 });
 
-$('.testbutton').live({
+$('.pushbutton').live({															// sending user input to FHEM
   vmousedown: function() {
-    document.getElementById('ausgabediv').innerHTML = 'mousedown';
+    window[this.getAttribute("data-protocol") + '_send'](this,'down');
   },
   vmouseup: function() {
-    document.getElementById('ausgabediv').innerHTML = 'mouseup';
+    window[this.getAttribute("data-protocol") + '_send'](this,'up');
   }
 });
 
-$("#serverTest").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$("#serverTest").live("click", function() {
 	xhrTest = new XMLHttpRequest();
 	xhrTest.open('GET', 'http://'+$('#serverAddress').val()+':'+$('#serverPort').val()+'/fhem?XHR=1&cmd=jsonlist', true);
 	xhrTest.onreadystatechange = function () {
@@ -285,7 +285,7 @@ $("#serverTest").live("click", function() {										// sending user input to FH
 	xhrTest.send(null);
 });
 
-$("#saveConfig").live("click", function() {										// sending user input to FHEM should somehow be called from PROTOCOL_send() functions
+$("#saveConfig").live("click", function() {
 	localStorage.setItem('serverAddress', $('#serverAddress').val());
 	localStorage.setItem('serverPort', $('#serverPort').val());
 	localStorage.setItem('serverUsername', $('#serverUsername').val());
