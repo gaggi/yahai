@@ -46,10 +46,12 @@ function EnOcean_send(name,action) {												// sending EnOcean status change
 			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' down', XHR: 1 },'',true);
 			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' down');						// some logging
 		} 
-	} else if(name.getAttribute("data-web-type") == 'button') {
+	} else if(name.getAttribute("data-web-type") == 'pushbutton') {
 		if(action == 'down') {
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' on', XHR: 1 },'',true);
 			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' on');		
 		} else {
+			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' released', XHR: 1 },'',true);
 			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' released');
 		}
 	}; 

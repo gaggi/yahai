@@ -93,8 +93,7 @@ function addPushButton(id,protocol,name,alias,sendActor,room,state) {
 	$("#primary"+room).append(
 	'<div data-role="fieldcontain">'+
 		'<label for="'+id+'button"><h5>'+alias+'</h5></label>'+
-		'<input type="button" value="Toggle" data-web-type="button" data-protocol="'+protocol+'" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-inline="true" class="pushbutton" />'+
-		'<div id="ausgabediv">nichts</div>'+
+		'<input type="button" value="Toggle" data-web-type="pushbutton" data-protocol="'+protocol+'" data-actor="'+id+'" data-send-actor="'+sendActor+'" name="'+id+'" id="'+id+'button" data-inline="true" class="pushbutton" />'+
 	'</div>');
 };
 
