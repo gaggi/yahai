@@ -33,8 +33,8 @@ function EnOcean_send(name,action) {												// sending EnOcean status change
 			console.log('SENDING: set '+name.getAttribute("data-send-actor")+' dim '+name.value);								// some logging
 		};
 	} else if(name.getAttribute("data-web-type") == 'switch') {
-		ajaxCall({ cmd: 'trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released', XHR: 1 },'',true);
-		console.log('SENDING: trigger nForTimer '+name.getAttribute("data-send-actor")+' on 0.1 released');	
+		ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' on-for-timer 1', XHR: 1 },'',true);
+		console.log('SENDING: set '+name.getAttribute("data-send-actor")+' on-for-timer 1');	
 	} else if(name.getAttribute("data-web-type") == 'shutter') {
 		if(name.id == name.getAttribute("data-actor")+'up') {
 			ajaxCall({ cmd: 'set '+name.getAttribute("data-send-actor")+' up', XHR: 1 },'',true);
